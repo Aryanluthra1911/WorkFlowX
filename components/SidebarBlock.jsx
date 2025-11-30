@@ -14,6 +14,7 @@ import { PiChatsCircleFill } from "react-icons/pi";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 export function SidebarBlock() {
     const router = useRouter()
@@ -80,8 +81,6 @@ export function SidebarBlock() {
         <div
             className={cn(
                 " flex  max-w-7xl flex-1 flex-col overflow-hidden  md:flex-row dark:border-neutral-700 dark:bg-neutral-800 h-full w-full"
-                // for your use case, use `` instead of `h-[60vh]
-                
             )}
         >
             <Sidebar open={open} setOpen={setOpen} animate={false}>
@@ -93,7 +92,7 @@ export function SidebarBlock() {
                         <div className="mt-8 flex flex-col gap-3">
                             {links.map((link, idx) => (
                                 <SidebarLink key={idx} link={link} onClick={(e)=>{
-                                    router.push(link.href)
+                                    link.label=== 'Logout' ? signOut({callbackUrl:'/signin'}): router.push(link.href)
                                 }} />
                             ))}
                         </div>

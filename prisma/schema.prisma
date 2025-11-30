@@ -73,3 +73,16 @@ model organisation{
   projects       Json
   category       String
 }
+enum Role {
+  Admin
+  Manager
+  Member
+}
+model UserData{
+  id             Int       @id @default(autoincrement())
+  name           String
+  c_name         String    @unique
+  email          String    @unique
+  password       String
+  role           Role
+}

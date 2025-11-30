@@ -1,34 +1,54 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardAction,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { signIn } from 'next-auth/react'
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation'
 
 const page = () =>{
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+
+    const handleSubmit = async(e)=>{
+        e.preventDefault();
+        setError('')
+        const res =await signIn("credentials",{
+            redirect:false,
+            email,
+            password,
+        })
+        if (res?.error) {
+            toast.error(res.error)
+            setError(res.error);
+            setLoading(false);
+            return;
+        }
+        toast.success('signin successfull')
+        router.push("/dashboard");
+    }
+
     return (
         <div className="flex justify-center items-center h-screen w-screen ">
-            <Card className="w-[30%] h-[55%] max-w-sm justify-around">
-                <CardHeader className={'w-full flex items-center justify-center'}>
-                    <CardTitle className={'font-semibold text-xl'}>Sign in to your account</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form>
+            <div className="w-[70%] min-h-[55%] h-auto max-w-sm flex flex-col items-center justify-evenly bg-gray-100 rounded-2xl">
+                <div className={'w-full flex items-center justify-center font-semibold text-xl'}>
+                    Sign in to your account
+                </div>
+                <div className='w-[85%] h-auto'>
+                    <form onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
                                 <Input
+                                    className={'bg-white'}
                                     id="email"
                                     type="email"
                                     placeholder="name@company.com"
+                                    onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
                             </div>
@@ -42,20 +62,19 @@ const page = () =>{
                                         Forgot your password?
                                     </a>
                                 </div>
-                                <Input id="password" type="password" required />
+                                <Input id="password" type="password" required className={'bg-white'} onChange={(e) => setPassword(e.target.value)}/>
                             </div>
                         </div>
+                        <Button  type="submit" className="w-full mt-6">
+                            
+                            {loading ? "Verifying..." : "Signin"}
+                        </Button>
+                        <Button variant="outline" className="w-full mt-6">
+                            Login with Google
+                        </Button>
                     </form>
-                </CardContent>
-                <CardFooter className="flex-col gap-2">
-                    <Button type="submit" className="w-full">
-                        Login
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                        Login with Google
-                    </Button>
-                </CardFooter>
-            </Card>
+                </div>
+            </div>
         </div>
     )
 }

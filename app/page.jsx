@@ -7,8 +7,8 @@ const page = () => {
   return (
     <div>
       <button onClick={()=>{
-        router.push('/dashboard')
-      }} className='w-50 h-20 border'>dashboard</button>
+        router.push('/register')
+      }} className='w-50 h-20 border'>register</button>
     </div>
   )
 }

@@ -1,52 +1,95 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardAction,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import axios from "axios"
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation'
+import { signIn } from 'next-auth/react'
+
 
 const page = () =>{
+    const router = useRouter()
+    const [name,setname]=useState('');
+    const [c_name,setc_name]=useState('');
+    const [email,setemail]=useState('');
+    const [password,setpassword]=useState('');
+    const [role,setrole]=useState('Admin');
+    const [loading,setloading] = useState(false)
+
+    const sendData =  async(e)=>{
+        e.preventDefault();
+        setloading(true)
+        try{
+            const res =  await axios.post('/api/registercompany',{
+                name:name,
+                c_name:c_name,
+                email:email,
+                password:password,
+                role:role
+            })
+            console.log(res.data)
+            if(res.data.success){
+                toast.success(res.data.message);
+                await signIn("credentials", {
+                    redirect: false,
+                    email,
+                    password,
+                });
+                router.push("/dashboard");
+            }
+            else{
+                toast.error(res.data.message)
+            }
+        }catch (err) {
+            console.error('register error:', err);
+            console.log(err?.response?.data)
+            toast.error(err?.response?.data?.message)
+        }
+        finally {
+            setloading(false);
+        }
+    }
     return (
         <div className=" h-screen w-screen flex justify-center items-center">
-            <Card className="w-[70%] h-[70%] max-w-sm justify-around">
-                <CardHeader className={'w-full flex items-center justify-center'}>
-                    <CardTitle className={'font-semibold text-xl'}>Register Your Company</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form>
+            <div className="w-[70%] min-h-[70%] h-auto max-w-sm flex flex-col items-center justify-around bg-gray-100 rounded-2xl">
+                <div className={'w-full flex items-center justify-center font-semibold text-xl'}>
+                    Register Your Company
+                </div>
+                <div className='w-[85%] h-auto'>
+                    <form onSubmit={sendData}>
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="Full Name">Full Name</Label>
                                 <Input
+                                    className={'bg-white'}
                                     id="Full Name"
                                     type="Full Name"
                                     placeholder=""
+                                    onChange={(e) => setname(e.target.value)}
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="Company Name">Company Name</Label>
                                 <Input
+                                    className={'bg-white'}
                                     id="Company Name"
                                     type="Company Name"
                                     placeholder=""
+                                    onChange={(e) => setc_name(e.target.value)}
                                     required
                                 />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
                                 <Input
+                                    className={'bg-white'}
                                     id="email"
                                     type="email"
                                     placeholder="name@company.com"
+                                    onChange={(e) => setemail(e.target.value)}
                                     required
                                 />
                             </div>
@@ -60,20 +103,18 @@ const page = () =>{
                                         Forgot your password?
                                     </a>
                                 </div>
-                                <Input id="password" type="password" required />
+                                <Input className={'bg-white'} id="password" type="password" required onChange={(e) => setpassword(e.target.value)}/>
                             </div>
                         </div>
+                        <Button  type="submit" className="w-full mt-6">
+                            {loading ? "Creating..." : "Create Account"}
+                        </Button>
+                        <Button variant="outline" className="w-full">
+                            Login with Google
+                        </Button>
                     </form>
-                </CardContent>
-                <CardFooter className="flex-col gap-2">
-                    <Button type="submit" className="w-full">
-                        Login
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                        Login with Google
-                    </Button>
-                </CardFooter>
-            </Card>
+                </div>
+            </div>
         </div>
     )
 }
