@@ -15,6 +15,7 @@ import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { FaUserPlus } from "react-icons/fa";
 
 export function SidebarBlock() {
     const {data:session} = useSession();
@@ -69,6 +70,13 @@ export function SidebarBlock() {
             href: "/activity",
             icon: (
                 <LuActivity className="h-5 w-5 shrink-0 text-white dark:text-neutral-200" />
+            ),
+        },
+        {
+            label: "Add User",
+            href: "/addUser",
+            icon: (
+                <FaUserPlus className="h-5 w-5 shrink-0 text-white dark:text-neutral-200" />
             ),
         },
 

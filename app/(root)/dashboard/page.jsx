@@ -1,27 +1,26 @@
 'use client'
-import Linechart from '@/components/Linechart'
-import { Piechart_Block } from '@/components/Piechart_Block'
-import SmallProjectCard from '@/components/SmallProjectCard'
-import React from 'react'
+import Admin_dashboard from '@/components/Admin_dashboard'
+import Manger_dashboard from '@/components/Manger_dashboard'
+import Member_dashboard from '@/components/Member_dashboard'
+
+import { useSession } from 'next-auth/react'
+import React, { useEffect, useState } from 'react'
 
 const page = () => {
-    return (
-        <div className='w-full h-[90%] bg-[#f9fafb] flex flex-col justify-around items-center'>
-            <div className='w-full h-[50%] flex justify-around items-center'>
-                <Piechart_Block title={"Task Status Distribution"} className={'w-[25%] h-[90%]'}/>
-                <Piechart_Block title={'Task Deadline Status'} className={'w-[25%] h-[90%]'}/>
-                <div className='w-[45%] h-[90%] border-2 rounded-2xl bg-white flex flex-col items-center justify-around shadow-md'>
-                    <div className='w-[90%] h-[15%] text-xl font-semibold flex items-center justify-center'>Ongoing Projects</div>
-                    <div className='w-[90%] h-[70%] flex'>
-                        <SmallProjectCard/>
-                    </div>
-                </div>
-            </div>
-            <div className='w-full h-[50%] flex justify-center items-center'>
-                <Linechart className={'w-[98%] h-[95%]'}/>
-            </div>
-        </div>
-    )
+    const {data:session}= useSession()
+    const [role,setrole] = useState('')
+    useEffect(()=>{
+        setrole(session.user.role)
+    },[session])
+    if(role === 'Admin'){
+        return <Admin_dashboard/>
+    }
+    else if(role === 'Manager'){
+        return <Manger_dashboard/>
+    }
+    else if(role === 'Manager'){
+        return <Member_dashboard/>
+    }
 }
 
 export default page
