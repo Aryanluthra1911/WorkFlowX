@@ -26,6 +26,7 @@ export default function ProtectedShell({ children }) {
     else if (currentPath === "Dashboard"&&session.user.role === 'Manager') currentPath = "Manager Overview";
     else if (currentPath === "Dashboard"&&session.user.role === 'Admin') currentPath = "Admin Dashboard";
     else if (currentPath === "AddUser") currentPath = "User Controls";
+    else if (currentPath === "Activity") currentPath = "User Activity";
     return (
         <div className="h-screen w-screen flex">
             <div className="w-auto h-full shadow-md">

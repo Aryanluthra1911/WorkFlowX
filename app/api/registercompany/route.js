@@ -6,8 +6,8 @@ export async function POST(req) {
     try {
         const body = await req.json();
         const { name , c_name , email , password ,role } = body
-        const Emailexists = await prisma.userData.findUnique({ where: { email } });
-        const Companyexists = await prisma.userData.findFirst({
+        const Emailexists = await prisma.users.findUnique({ where: { email } });
+        const Companyexists = await prisma.users.findFirst({
             where: { c_name }
         });
         if (Emailexists) {
@@ -17,7 +17,7 @@ export async function POST(req) {
             return NextResponse.json({success:false, message: "Company Name already exists" }, { status: 409 });
         }
         const hashedPass = await bcrypt.hash(password,10)
-        await prisma.userData.create({
+        await prisma.users.create({
             data:{
                 name,c_name,email,password:hashedPass,role
             }
@@ -27,6 +27,6 @@ export async function POST(req) {
         return NextResponse.json(
             { success: false, message: "Server Error" },
             { status: 500 }
-);
+        );
     }
 }

@@ -1,13 +1,83 @@
-import React from 'react'
+'use client'
+import React, { useEffect, useState } from 'react'
 import { FaUserPlus } from "react-icons/fa";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LuUsers } from "react-icons/lu";
 import { LuSearch } from "react-icons/lu";
-
+import axios from 'axios';
+import { toast } from "react-toastify";
+import { useSession } from 'next-auth/react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 
 const page = () => {
+    
+    const [activeid, setactiveid] = useState(null)
+    const {data:session} = useSession();
+    const [email,setemail]=useState('');
+    const [password,setpassword]=useState('');
+    const [name,setname]=useState('');
+    const [role,setrole]=useState('');
+    const [phoneno,setphoneno]= useState('')
+    const [yop,setyop]=useState('')
+    const [joiningdate,setjoiningdate]= useState('')
+    const [loading,setloading] = useState(false)
+    const [cname,setcname] = useState('')
+
+    useEffect(()=>{
+        if(session){
+            setcname(session.user.c_name)
+        }
+    },[session])
+    var sno = 1;
+    const sendData = async(e)=>{
+        e.preventDefault();
+        setloading(true)
+        try{
+            const res = await axios.post('/api/UserControls/createUser',{
+                name,email,role,password,years_of_experience:Number(yop),joining_date:joiningdate,phoneno,cname
+            })
+            if(res.data.success){
+                toast.success(res.data.message)
+                setname('')
+                setrole('')
+                setemail('')
+                setpassword('')
+                setphoneno("")
+                setyop('')
+                setjoiningdate('')
+                getusers();
+            }
+            else{
+                toast.error(res.data.message)
+            }
+        }catch (err) {
+            console.error('register error:', err);
+            console.log(err?.response?.data)
+            toast.error(err?.response?.data?.message)
+        }finally {
+            setloading(false);
+        }
+    }
+    const [users,setusers] = useState([]);
+    const getusers = async()=>{
+        const res = await axios.get('/api/UserControls/viewUsers',{params:{cname:cname}})
+        setusers(res.data);   
+        console.log(res.data)
+    }
+    useEffect(()=>{
+        if(cname){
+            getusers()
+        }
+        
+    },[cname])
     return (
         <div className='w-full h-[90%] bg-[#f9fafb] flex justify-evenly items-center'>
             <div className='w-[49%] h-[97%] rounded-2xl bg-white shadow-md border-2 p-2 flex flex-col items-center justify-evenly'>
@@ -17,7 +87,7 @@ const page = () => {
                     </div>
                     <div className='text-[#2563eb] font-bold'>Create User</div>
                 </div>
-                <form className='w-[97%] h-[85%]' action="">
+                <form onSubmit={sendData} className='w-[97%] h-[85%]'>
                     <div className='w-full h-[90%] flex items-center justify-around'>
                         <div className='w-[50%] h-full flex flex-col justify-center items-center'>
                             <div className='w-[90%] h-[23%] bg-white grid '>
@@ -26,7 +96,9 @@ const page = () => {
                                     className={'bg-white text-xl'}
                                     id="title"
                                     type="text"
+                                    value={name}
                                     placeholder="Enter Name"
+                                    onChange={(e) => setname(e.target.value)}
                                     required
                                 />
                             </div>
@@ -35,8 +107,10 @@ const page = () => {
                                 <Input
                                     className={'bg-white'}
                                     id="title"
-                                    type="text"
-                                    placeholder="Enter Email"
+                                    type="email"
+                                    value={email}
+                                    placeholder="name@gmail.com"
+                                    onChange={(e) => setemail(e.target.value)}
                                     required
                                 />
                             </div>
@@ -46,17 +120,21 @@ const page = () => {
                                     className={'bg-white'}
                                     id="title"
                                     type="text"
+                                    value={phoneno}
                                     placeholder="Enter number"
+                                    onChange={(e) => setphoneno(e.target.value)}
                                     required
                                 />
                             </div>
                             <div className='w-[90%] h-[23%] bg-white grid '>
-                                <Label>Joing Date</Label>
+                                <Label>Joining Date</Label>
                                 <Input
                                     className={'bg-white'}
                                     id="title"
                                     type="date"
+                                    value={joiningdate}
                                     placeholder="Enter title"
+                                    onChange={(e) => setjoiningdate(e.target.value)}
                                     required
                                 />
                             </div>
@@ -65,13 +143,15 @@ const page = () => {
                         <div className='w-[50%] h-full flex flex-col justify-center items-center'>
                             <div className='w-[90%] h-[23%] bg-white grid '>
                                 <Label>Role</Label>
-                                <Input
-                                    className={'bg-white'}
-                                    id="title"
-                                    type="text"
-                                    placeholder="Enter role"
-                                    required
-                                />
+                                <Select value={role} onValueChange={setrole} className={'w-full'}>
+                                    <SelectTrigger className="w-[full]">
+                                        <SelectValue placeholder="Enter Role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Member">Member</SelectItem>
+                                        <SelectItem value="Manager">Manager</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className='w-[90%] h-[23%] bg-white grid '>
                                 <Label>Password</Label>
@@ -79,7 +159,9 @@ const page = () => {
                                     className={'bg-white'}
                                     id="title"
                                     type="text"
+                                    value={password}
                                     placeholder="Enter password"
+                                    onChange={(e) => setpassword(e.target.value)}
                                     required
                                 />
                             </div>
@@ -89,7 +171,9 @@ const page = () => {
                                     className={'bg-white'}
                                     id="title"
                                     type="text"
+                                    value={yop}
                                     placeholder="Enter experience in years"
+                                    onChange={(e) => setyop(e.target.value)}
                                     required
                                 />
                             </div>
@@ -97,8 +181,8 @@ const page = () => {
                         </div>
                     </div>
                     <div className='w-[97%] h-[10%] flex items-center justify-center'>
-                        <button className='text-white w-[50%] h-[90%] bg-[#2563eb] rounded-2xl border-white border shadow-md font-semibold'>
-                            Add User
+                        <button type='submit' className={`text-white w-[50%] h-[90%] bg-[#2563eb] rounded-2xl ${loading ? 'bg-[#526691]':""} border-white border shadow-md font-semibold`}>
+                            {loading  ? 'Adding User...':"Add User"}
                         </button>
                     </div>
                     
@@ -117,10 +201,25 @@ const page = () => {
                         <input className='w-[90%] h-full outline-none rounded-2xl' placeholder='Search Users...'/>
                     </div>
                 </div>
-                <div className='w-[97%] h-[65%] border overflow-y-auto no-scrollbar'>
-
+                <div className='w-[97%] h-[5%] border-b rounded-2xl flex justify-around items-center'>
+                    <div className='h-full w-[10%] text-xs flex justify-center items-center font-light'>Sno</div>
+                    <div className='h-full w-[30%] text-xs flex justify-center items-center font-light'>Name</div>
+                    <div className='h-full w-[40%] text-xs flex justify-center items-center font-light'>Email</div>
+                    <div className='h-full w-[20%] text-xs flex justify-center items-center font-light'>Role</div>
                 </div>
-                <div className='w-[97%] h-[10%] border flex justify-evenly items-center'>
+                <div className='w-[97%] h-[60%] overflow-y-auto no-scrollbar space-y-3'>
+                    {users.map((idx,key)=>{
+                        return(
+                            <div onClick={()=>{setactiveid(idx.sno)}} key={key} className={`${activeid===idx.email?'border-black shadow:md bg-gray-100':""} w-full h-10 hover:bg-gray-100 bg-[#f9fafb] border rounded-2xl flex justify-around items-center transform transition-all duration-200 `}>
+                                <div className='h-full w-[10%] text-xs flex justify-center items-center font-light'>{sno++}</div>
+                                <div className='h-full w-[30%] text-xs flex justify-center items-center font-light'>{idx.name}</div>
+                                <div className='h-full w-[40%] text-xs flex justify-center items-center font-light'>{idx.email}</div>
+                                <div className='h-full w-[20%] text-xs flex justify-center items-center font-light'>{idx.role}</div>
+                            </div>
+                        )
+                    })}
+                </div>
+                <div className='w-[97%] h-[8%] flex justify-evenly items-center'>
                     <button className='font-bold w-[30%] h-[80%] border-2 bg-white border-[#2563eb] rounded-2xl text-[#2563eb]  hover:text-white hover:bg-[#2563eb] transform transition-all duration-200'>
                         Change Role
                     </button>

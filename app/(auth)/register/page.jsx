@@ -29,7 +29,6 @@ const page = () =>{
                 password:password,
                 role:role
             })
-            console.log(res.data)
             if(res.data.success){
                 toast.success(res.data.message);
                 await signIn("credentials", {

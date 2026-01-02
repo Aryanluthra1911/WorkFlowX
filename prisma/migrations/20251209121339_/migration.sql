@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Users" ALTER COLUMN "phone" DROP NOT NULL,
+ALTER COLUMN "joiningDate" DROP NOT NULL,
+ALTER COLUMN "yearsOfExperience" DROP NOT NULL;

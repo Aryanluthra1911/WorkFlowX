@@ -20,7 +20,11 @@ enum Status {
   ON_HOLD
   CANCELLED
 }
-
+enum Role {
+  Admin
+  Manager
+  Member
+}
 
 model Project {
   id             Int       @id @default(autoincrement())
@@ -37,22 +41,6 @@ model Project {
   updatedAt      DateTime  @updatedAt
 }
 
-model Employee {
-  id               Int       @id @default(autoincrement())
-  name             String
-  email            String    @unique
-  phone            String
-  joiningDate      DateTime 
-  role             String 
-  performanceRating Float    @default(0) 
-  taskAssigned     Int       @default(0)
-  taskCompleted    Int       @default(0)
-  projectCompleted Int       @default(0)
-  tasks            Json                 
-  password         String
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-}
 model Task {
   id             Int       @id @default(autoincrement())
   title          String
@@ -73,16 +61,21 @@ model organisation{
   projects       Json
   category       String
 }
-enum Role {
-  Admin
-  Manager
-  Member
-}
-model UserData{
+
+model Users{
   id             Int       @id @default(autoincrement())
   name           String
-  c_name         String    @unique
+  c_name         String    
   email          String    @unique
   password       String
   role           Role
+  phone            String?   
+  joiningDate      String?
+  performanceRating Float    @default(0) 
+  taskAssigned     Int       @default(0)
+  taskCompleted    Int       @default(0)
+  projectCompleted Int       @default(0)                 
+  yearsOfExperience Int?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }

@@ -66,7 +66,7 @@ export function SidebarBlock() {
             ),
         },
         {
-            label: "Activity",
+            label: "User Activity",
             href: "/activity",
             icon: (
                 <LuActivity className="h-5 w-5 shrink-0 text-white dark:text-neutral-200" />
