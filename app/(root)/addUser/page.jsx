@@ -70,7 +70,6 @@ const page = () => {
     const getusers = async()=>{
         const res = await axios.get('/api/UserControls/viewUsers',{params:{cname:cname}})
         setusers(res.data);   
-        console.log(res.data)
     }
     useEffect(()=>{
         if(cname){

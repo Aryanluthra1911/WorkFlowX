@@ -1,8 +1,20 @@
+'use client'
 import React, { useEffect, useState } from 'react'
 import { CheckSquare } from "lucide-react";
 import { RxCross2 } from "react-icons/rx";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-toastify';
+
 
 const AssignTaskBlock = () => {
     const [open,setopen] = useState(false)
@@ -39,6 +51,44 @@ const AssignTaskBlock = () => {
     )
 }
 function TaskModel({onClose}){
+    const {data:session} = useSession();
+    const [title,settitle] = useState('')
+    const [description,setdescription] = useState('')
+    const [dueDate,setdueDate] = useState('')
+    const [assignedToId,setassignedToId] = useState()
+    const [assignedTo,setassignedTo] = useState('')
+    const [c_name,setc_name] = useState('')
+    const [members,setmembers] = useState([])
+    const [loading,setloading] = useState(false)
+    const getMembers = async () => {
+        const res = await axios.get("/api/Dashboard/getMembers",{params:{c_name:c_name}});
+        setmembers(res.data);
+    };
+    const sendData = async(e)=>{
+        e.preventDefault();
+        setloading(true)
+        try{
+            const res = await axios.post('/api/Dashboard/createTask',{title,description,dueDate,assignedTo,assignedToId,companyName:c_name})
+            if(res.data.success){
+                toast.success(res.data.message);
+                settitle('')
+                setdescription('')
+                setloading(false)
+                onClose()
+            }
+        }catch (err) {
+            console.error('register error:', err);
+            console.log(err?.response?.data)
+            toast.error(err?.response?.data?.message)
+        }finally {
+            setloading(false);
+        }
+    }
+    useEffect(()=>{
+        if(session){
+            setc_name(session.user.c_name)
+        }
+    },[session])
     useEffect(() => {
         function onKey(e) {
             if (e.key === "Escape") onClose();
@@ -46,6 +96,12 @@ function TaskModel({onClose}){
             document.addEventListener("keydown", onKey);
         return () => document.removeEventListener("keydown", onKey);
     }, [onClose]);
+    useEffect(()=>{
+        if(c_name){
+            getMembers()
+        }
+    },[c_name])
+    
     return(
         <div className='fixed inset-0 z-50 flex justify-center items-center'>
             <div className='absolute inset-0 bg-black/40 backdrop-blur-sm'/>
@@ -56,7 +112,7 @@ function TaskModel({onClose}){
                         <RxCross2 className="h-6 w-6 shrink-0 text-gray-400 hover:text-black dark:text-neutral-200 transform transition-all duration-200"/>
                     </div>
                 </div>
-                <form className='w-[95%] h-[80%] flex flex-col items-center '>
+                <form onSubmit={sendData} className='w-[95%] h-[80%] flex flex-col items-center '>
                     <div className='w-full h-[88%] flex items-center justify-around'>
                         <div className='w-[50%] h-full flex flex-col justify-around items-center'>
                             <div className='w-[90%] h-[30%] bg-white grid gap-1'>
@@ -65,6 +121,7 @@ function TaskModel({onClose}){
                                     className={'bg-white'}
                                     id="title"
                                     type="text"
+                                    onChange={(e) => settitle(e.target.value)}
                                     placeholder="Enter title"
                                     required
                                 />
@@ -75,6 +132,7 @@ function TaskModel({onClose}){
                                     className={'bg-white'}
                                     id="title"
                                     type="date"
+                                    onChange={(e) => setdueDate(e.target.value)}
                                     placeholder="date"
                                     required
                                 />
@@ -85,6 +143,7 @@ function TaskModel({onClose}){
                                     className={'bg-white '}
                                     id="title"
                                     type="text"
+                                    onChange={(e) => setdescription(e.target.value)}
                                     placeholder="Enter description"
                                     required
                                 />
@@ -93,13 +152,22 @@ function TaskModel({onClose}){
                         <div className='w-[50%] h-full flex flex-col gap-4 items-center'>
                             <div className='w-[90%] h-[30%] bg-white grid gap-1'>
                                 <Label>Assign To</Label>
-                                <Input
-                                    className={'bg-white'}
-                                    id="title"
-                                    type="text"
-                                    placeholder="Member Name"
-                                    required
-                                />
+                                <Select value={assignedTo} onValueChange={(value) => {
+                                    const member = members.find(m => m.name === value);
+                                    setassignedTo(value);
+                                    setassignedToId(member?.id);
+                                }}className={'bg-white'} required>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Member Name" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {members.map((idx,key)=>{
+                                            return <SelectItem onClick={()=>{
+                                                setassignedToId(idx.id)
+                                            }} key={key} value={idx.name}>{idx.name}</SelectItem>
+                                        })}
+                                    </SelectContent>
+                                </Select>
                             </div>
                             
                             <div className='w-[90%] h-[30%] bg-white grid gap-1'>
@@ -108,7 +176,7 @@ function TaskModel({onClose}){
                                     className={'bg-white'}
                                     id="title"
                                     type="file"
-                                    required
+                                    
                                 />
                             </div>
                         </div>
@@ -117,14 +185,12 @@ function TaskModel({onClose}){
                         <button onClick={onClose} className='w-[40%] h-full rounded-2xl text-xl font-semibold border-gray-200 border hover:border-black transform transition-all duration-200'>
                             Cancel
                         </button>
-                        <button className='transform transition-all duration-200 hover:border-black w-[40%] h-full bg-[#16a34a] text-white rounded-2xl text-xl font-semibold border '>
-                            Create Task
+                        <button type='submit' className={`${loading? "bg-[#268a4a]":""}transform transition-all duration-200 hover:border-black w-[40%] h-full bg-[#16a34a] text-white rounded-2xl text-xl font-semibold border`}>
+                            {loading? "Creating Task...":"Create Task"}
                         </button>
                     </div>
-                    
                 </form>
             </div>
-                
         </div>
     )
 }

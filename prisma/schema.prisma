@@ -44,13 +44,14 @@ model Project {
 model Task {
   id             Int       @id @default(autoincrement())
   title          String
+  companyName    String
   description    String
   assignedToId   Int
   assignedTo     String
   status         Status    @default(PENDING)
-  dueDate        DateTime
+  dueDate        String
   assignedDate   DateTime  @default(now())
-  completionDate DateTime
+  completionDate DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
