@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Project" ALTER COLUMN "dueDate" SET DATA TYPE TEXT;

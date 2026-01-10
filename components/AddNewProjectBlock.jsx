@@ -1,8 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FiFolder } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-toastify';
 
 const AddNewProjectBlock = () => {
     const [open,setopen] = useState(false)
@@ -19,7 +29,7 @@ const AddNewProjectBlock = () => {
             </div>
             <div className=' h-[15%] w-[90%]'>
                 <button onClick={() => setopen(true)} className='w-full h-[90%] text-white bg-[#16a34a] rounded-2xl text-lg font-semibold'>
-                    + Assign New Task
+                    + Add New Project
                 </button>
             </div>
             <div className='h-[8%] w-[90%] text-black font-semibold text-sm flex items-center'>
@@ -38,6 +48,56 @@ const AddNewProjectBlock = () => {
     )
 }
 function ProjectModel({onClose}){
+    const [title,settitle]= useState('')
+    const [description ,setdescription] = useState("")
+    const [projectManager,setprojectManger] = useState('')
+    const [deadline,setdeadline] = useState('')
+    const [organisation,setorganisation] = useState('')
+    const [projectManagerId, setprojectMangerId] = useState()
+    const {data:session} = useSession();
+    const [managers,setmanagers] = useState([])
+    const [c_name,setc_name] = useState('')
+    const [loading,setloading] = useState(false)
+    const getManagers = async () => {
+        const res = await axios.get("/api/Dashboard/getManagers",{params:{c_name:c_name}});
+        setmanagers(res.data);
+    };
+    const sendData = async(e)=>{
+        e.preventDefault();
+        setloading(true)
+        try{
+            const res = await axios.post('/api/Dashboard/addProject',{title,
+                description,
+                organisation,
+                deadline,
+                projectManager,
+                projectManagerId})
+            if(res.data.success){
+                toast.success(res.data.message);
+                settitle('')
+                setdescription('')
+                setorganisation('')
+                setloading(false)
+                onClose()
+            }
+        }catch (err) {
+            console.error('register error:', err);
+            console.log(err?.response?.data)
+            toast.error(err?.response?.data?.message)
+        }finally {
+            setloading(false);
+        }
+    }
+    useEffect(()=>{
+        if(session){
+            setc_name(session.user.c_name)
+        }
+    },[session])
+    useEffect(()=>{
+        if(c_name){
+            getManagers()
+        }
+    },[c_name])
     useEffect(() => {
         function onKey(e) {
             if (e.key === "Escape") onClose();
@@ -55,7 +115,7 @@ function ProjectModel({onClose}){
                         <RxCross2 className="h-6 w-6 shrink-0 text-gray-400 hover:text-black dark:text-neutral-200 transform transition-all duration-200"/>
                     </div>
                 </div>
-                <form className='w-[95%] h-[80%] flex flex-col items-center '>
+                <form onSubmit={sendData} className='w-[95%] h-[80%] flex flex-col items-center '>
                     <div className='w-full h-[88%] flex items-center justify-around'>
                         <div className='w-[50%] h-full flex flex-col justify-around items-center'>
                             <div className='w-[90%] h-[30%] bg-white grid gap-1'>
@@ -64,6 +124,7 @@ function ProjectModel({onClose}){
                                     className={'bg-white'}
                                     id="title"
                                     type="text"
+                                    onChange={(e) => settitle(e.target.value)}
                                     placeholder="Enter title"
                                     required
                                 />
@@ -74,6 +135,7 @@ function ProjectModel({onClose}){
                                     className={'bg-white'}
                                     id="title"
                                     type="date"
+                                    onChange={(e) => setdeadline(e.target.value)}
                                     placeholder="date"
                                     required
                                 />
@@ -84,6 +146,7 @@ function ProjectModel({onClose}){
                                     className={'bg-white '}
                                     id="title"
                                     type="text"
+                                    onChange={(e) => setdescription(e.target.value)}
                                     placeholder="Enter description"
                                     required
                                 />
@@ -96,19 +159,27 @@ function ProjectModel({onClose}){
                                     className={'bg-white'}
                                     id="title"
                                     type="text"
+                                    onChange={(e) => setorganisation(e.target.value)}
                                     placeholder="Enter organisation name"
                                     required
                                 />
                             </div>
                             <div className='w-[90%] h-[30%] bg-white grid gap-1'>
                                 <Label>Project Manager</Label>
-                                <Input
-                                    className={'bg-white'}
-                                    id="title"
-                                    type="text"
-                                    placeholder="Manager name"
-                                    required
-                                />
+                                <Select value={projectManager}
+                                    onValueChange={(value) => {
+                                        const manager = managers.find(m => m.id === Number(value));
+                                        setprojectMangerId(manager.id);
+                                    }} className={'bg-white'} required>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Manager Name" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {managers.map((idx,key)=>{
+                                            return <SelectItem key={key} value={idx.name}>{idx.name}</SelectItem>
+                                        })}
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className='w-[90%] h-[30%] bg-white grid gap-1'>
                                 <Label>Documents</Label>
@@ -126,8 +197,8 @@ function ProjectModel({onClose}){
                         <button onClick={onClose} className='w-[40%] h-full rounded-2xl text-xl font-semibold border-gray-200 border hover:border-black transform transition-all duration-200'>
                             Cancel
                         </button>
-                        <button className='transform transition-all duration-200 hover:border-black w-[40%] h-full bg-[#16a34a] text-white rounded-2xl text-xl font-semibold border '>
-                            Create Project
+                        <button type='submit' className={`${loading? "bg-[#268a4a]":""}transform transition-all duration-200 hover:border-black w-[40%] h-full bg-[#16a34a] text-white rounded-2xl text-xl font-semibold border `}>
+                            {loading? "Creating Project...":"Create Project"}
                         </button>
                     </div>
                     

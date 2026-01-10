@@ -30,13 +30,15 @@ model Project {
   id             Int       @id @default(autoincrement())
   title          String
   description    String
-  tasks          Json 
-  members        Json 
+  tasks          Json? 
+  members        Json ?
   status         Status @default(PENDING)
   organisation   String
-  startDate      DateTime
-  dueDate        DateTime
-  completionDate DateTime
+  startDate      DateTime  @default(now())
+  dueDate        String
+  completionDate DateTime?
+  projectManager String
+  projectManagerId  Int
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }

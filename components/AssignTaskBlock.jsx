@@ -169,6 +169,25 @@ function TaskModel({onClose}){
                                     </SelectContent>
                                 </Select>
                             </div>
+                            <div className='w-[90%] h-[30%] bg-white grid gap-1'>
+                                <Label>Project</Label>
+                                <Select value={assignedTo} onValueChange={(value) => {
+                                    const member = members.find(m => m.name === value);
+                                    setassignedTo(value);
+                                    setassignedToId(member?.id);
+                                }}className={'bg-white'} required>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Project Name" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {members.map((idx,key)=>{
+                                            return <SelectItem onClick={()=>{
+                                                setassignedToId(idx.id)
+                                            }} key={key} value={idx.name}>{idx.name}</SelectItem>
+                                        })}
+                                    </SelectContent>
+                                </Select>
+                            </div>
                             
                             <div className='w-[90%] h-[30%] bg-white grid gap-1'>
                                 <Label>Documents</Label>
