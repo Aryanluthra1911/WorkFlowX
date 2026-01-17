@@ -1,59 +1,41 @@
-import React from 'react'
-import { CheckSquare } from "lucide-react";
+'use client'
+import React, { useEffect, useState } from 'react'
 import { LuFileText } from "react-icons/lu";
 import ProjectDetailCard from './ProjectDetailCard';
+import { useSession } from 'next-auth/react';
+import api from '@/lib/axios';
+import useAdminStore from '@/store/admin/useAdminstore';
 
 const ProjectDetailBlock = () => {
-    const tasksData = [
-  {
-    sno: 1,
-    title: "Website Redesign",
-    deadline: "2025-12-15",
-    organisation: "TechNova Pvt Ltd",
-    managedBy: "Amit Sharma",
-    status: 12,
-  },
-  {
-    sno: 2,
-    title: "Mobile App Testing",
-    deadline: "2025-12-20",
-    organisation: "CodeWave Solutions",
-    managedBy: "Neha Verma",
-    status: 56,
-  },
-  {
-    sno: 3,
-    title: "Database Migration",
-    deadline: "2025-12-10",
-    organisation: "DataCorp India",
-    managedBy: "Rohit Mehta",
-    status: 21,
-  },
-  {
-    sno: 4,
-    title: "UI/UX Audit",
-    deadline: "2025-12-18",
-    organisation: "DesignHub Studio",
-    managedBy: "Simran Kaur",
-    status: 92,
-  },
-  {
-    sno: 5,
-    title: "SEO Optimization",
-    deadline: "2025-12-22",
-    organisation: "GrowthMark Agency",
-    managedBy: "Karan Malhotra",
-    status: 17,
-  },
-  {
-    sno: 5,
-    title: "SEO Optimization",
-    deadline: "2025-12-22",
-    organisation: "GrowthMark Agency",
-    managedBy: "Karan Malhotra",
-    status: 19,
-  },
-];
+  const [c_name,setc_name] = useState('')
+  const {data:session} = useSession();
+  const { projects,setprojects,latestProjects,latestTasks } = useAdminStore();
+  const [loading,setloading] = useState(false)
+
+  const getprojects = async()=>{
+    setloading(true);
+    try{
+      const res = await api.get("/Dashboard/getProjects",{params:{c_name:c_name}})
+      setprojects(res.data.data);
+    }catch(err){
+      console.log(err)
+      setprojects([]);
+    }
+    finally{
+      setloading(false)
+    }
+  }
+  useEffect(()=>{
+    if(session){
+      setc_name(session.user.c_name)
+    }
+  },[session])
+  useEffect(()=>{
+    if(c_name){
+      getprojects()
+    }
+  },[c_name,latestProjects,latestTasks])
+
 
     return (
         <div className='h-[95%] w-[97.5%] bg-white rounded-2xl flex items-center justify-evenly flex-col shadow-md border-2 border-t-[#a855f7] border-t-3'>
@@ -72,9 +54,18 @@ const ProjectDetailBlock = () => {
                 <div className='w-[20%] h-full text-xs font-light flex items-center justify-center '>Status</div>
             </div>
             <div className='w-[95%] h-[70%] overflow-y-auto no-scrollbar space-y-2'>
-                {tasksData.map((idx,key)=>{
-                    return<ProjectDetailCard idx={idx} key={key}/>
-                })}
+              {loading ? <div className='text-[#374151] w-full h-full flex items-center justify-center'>
+                Loading...
+              </div>
+              :
+              projects?.length===0 ? <div className='text-xl text-gray-400 w-full h-full flex items-center justify-center'>
+                No Project Data Found
+              </div>:(
+                projects.map((idx,key)=>{
+                  return<ProjectDetailCard idx={idx} key={idx.id} sno={key+1} />
+                })
+              )
+              }
             </div>
         </div>
     )

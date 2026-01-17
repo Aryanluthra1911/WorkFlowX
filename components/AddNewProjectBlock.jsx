@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from 'react'
 import { FiFolder } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
@@ -10,12 +11,41 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
+import api from '@/lib/axios';
+import useAdminStore from '@/store/admin/useAdminstore';
+
 
 const AddNewProjectBlock = () => {
-    const [open,setopen] = useState(false)
+    const [open,setopen] = useState(false);
+    const {data:session} = useSession();
+    const [c_name,setc_name] = useState('')
+    const { latestProjects,setlatestProjects } =useAdminStore()
+    const [loading,setloading] = useState([])
+    const getLatestProjects = async () => {
+        setloading(true);
+        try{
+            const res = await api.get("/Dashboard/getLatestProjects",{params:{c_name:c_name}});
+            setlatestProjects(res.data.data);
+        }catch(err){
+            console.log(err)
+            setlatestProjects([]);
+        }
+        finally{
+            setloading(false)
+        }
+    };
+    useEffect(()=>{
+        if(session){
+            setc_name(session.user.c_name)
+        }
+    },[session])
+    useEffect(()=>{
+        if(c_name){
+            getLatestProjects()
+        }
+    },[c_name,open])
     return (
         <div className='h-[95%] w-[48%] bg-white rounded-2xl shadow-lg border-2 flex flex-col items-center justify-around border-t-[#16a34a] border-t-3'>
             <div className='h-[15%] w-[90%] flex gap-4 items-center'>
@@ -35,13 +65,27 @@ const AddNewProjectBlock = () => {
             <div className='h-[8%] w-[90%] text-black font-semibold text-sm flex items-center'>
                 Recent Projects:
             </div>
-            <div className=' bg-[#f9fafb] rounded-2xl h-[20%] w-[90%] flex flex-col justify-center items-start'>
-                <div className='pl-5 text-sm font-bold'>Design Homepage</div>
-                <div className='pl-5 text-sm font-semibold text-[#747c86]'>Assigned To: aryan</div>
-            </div>
-            <div className=' bg-[#f9fafb] rounded-2xl h-[20%] w-[90%]'>
-                <div className='pl-5 text-sm font-bold'>Design Homepage</div>
-                <div className='pl-5 text-sm font-semibold text-[#747c86]'>Assigned To: aryan</div>
+            <div className='w-[90%] h-[40%] flex flex-col items-center justify-start gap-2'>
+                {loading ? 
+                    <div className='text-[#374151] w-full h-full flex items-center justify-center'>
+                        Loading...
+                    </div>
+                :
+                    latestProjects?.length === 0 ?(
+                        <div className='text-xl text-gray-400'>
+                            No Project Data
+                        </div>
+                    ):(
+                        latestProjects.map((idx,key)=>{
+                            return(
+                                <div key={idx.id} className=' bg-[#f9fafb] rounded-2xl h-[45%] w-full flex flex-col justify-center items-start'>
+                                    <div className='pl-5 text-sm font-bold'>{idx.title}</div>
+                                    <div className='pl-5 text-sm font-semibold text-[#747c86]'>Managed By: {idx.projectManager}</div>
+                                </div>
+                            )
+                        })
+                    )
+                }
             </div>
             {open &&<ProjectModel onClose={() => setopen(false)} />}
         </div>
@@ -53,25 +97,27 @@ function ProjectModel({onClose}){
     const [projectManager,setprojectManger] = useState('')
     const [deadline,setdeadline] = useState('')
     const [organisation,setorganisation] = useState('')
-    const [projectManagerId, setprojectMangerId] = useState()
+    const [projectManagerId, setprojectMangerId] = useState(null)
     const {data:session} = useSession();
-    const [managers,setmanagers] = useState([])
+    const { managers,setmanagers } = useAdminStore()
     const [c_name,setc_name] = useState('')
     const [loading,setloading] = useState(false)
     const getManagers = async () => {
-        const res = await axios.get("/api/Dashboard/getManagers",{params:{c_name:c_name}});
+        const res = await api.get("/Dashboard/getManagers",{params:{c_name:c_name}});
         setmanagers(res.data);
     };
     const sendData = async(e)=>{
         e.preventDefault();
         setloading(true)
         try{
-            const res = await axios.post('/api/Dashboard/addProject',{title,
+            const res = await api.post('/Dashboard/addProject',{title,
                 description,
                 organisation,
                 deadline,
                 projectManager,
-                projectManagerId})
+                projectManagerId:parseInt(projectManagerId),
+                c_name
+            })
             if(res.data.success){
                 toast.success(res.data.message);
                 settitle('')
@@ -98,6 +144,14 @@ function ProjectModel({onClose}){
             getManagers()
         }
     },[c_name])
+    useEffect(() => {
+        if (!projectManager || managers.length === 0) return;
+        const manager = managers.find(m => m.name === projectManager);
+        if (manager) {
+            setprojectMangerId(manager.id);
+        }
+    }, [projectManager, managers]);
+
     useEffect(() => {
         function onKey(e) {
             if (e.key === "Escape") onClose();
@@ -167,10 +221,7 @@ function ProjectModel({onClose}){
                             <div className='w-[90%] h-[30%] bg-white grid gap-1'>
                                 <Label>Project Manager</Label>
                                 <Select value={projectManager}
-                                    onValueChange={(value) => {
-                                        const manager = managers.find(m => m.id === Number(value));
-                                        setprojectMangerId(manager.id);
-                                    }} className={'bg-white'} required>
+                                    onValueChange={setprojectManger} className={'bg-white'} required>
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Manager Name" />
                                     </SelectTrigger>
@@ -187,14 +238,13 @@ function ProjectModel({onClose}){
                                     className={'bg-white'}
                                     id="title"
                                     type="file"
-                                    
-                                    required
+
                                 />
                             </div>
                         </div>
                     </div>
                     <div className='w-full h-[12%] flex justify-around items-center'>
-                        <button onClick={onClose} className='w-[40%] h-full rounded-2xl text-xl font-semibold border-gray-200 border hover:border-black transform transition-all duration-200'>
+                        <button onClick={onClose} className='w-[40%] h-full rounded-2xl text-xl font-semibold border-black border hover:border-white hover:bg-red-600 hover:text-[#ffffff] transform transition-all duration-200'>
                             Cancel
                         </button>
                         <button type='submit' className={`${loading? "bg-[#268a4a]":""}transform transition-all duration-200 hover:border-black w-[40%] h-full bg-[#16a34a] text-white rounded-2xl text-xl font-semibold border `}>

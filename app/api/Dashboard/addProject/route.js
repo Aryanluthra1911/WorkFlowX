@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req) {
     try{
         const body = await req.json();
-        const {title,organisation,deadline,projectManager,projectManagerId,description} = body
+        const {title,organisation,deadline,projectManager,projectManagerId,description,c_name} = body
         await prisma.project.create({
             data:{
                 title,
@@ -12,11 +12,13 @@ export async function POST(req) {
                 organisation,
                 dueDate:deadline,
                 projectManager,
-                projectManagerId
+                projectManagerId,
+                companyName:c_name
             }
         })
         return NextResponse.json({success:true,message:'project created'})
-    }catch{
-        return NextResponse.json({success:false,message:"API falied"})
+    }catch(err){
+        console.error("ADD PROJECT ERROR 👉", err);
+        return NextResponse.json({message:"api error",success:false,message:"API falied"})
     }
 }
