@@ -51,14 +51,18 @@ export const authOptions= {
                 token.id = user.id;
                 token.role = user.role;
                 token.c_name = user.c_name;
+                token.email= user.email;
+                token.name= user.name
             }
             return token;
         },
         async session({ session, token }) {
             if (token && session.user) {
+                session.user.name = token.name
                 session.user.id = token.id;
                 session.user.role = token.role;
                 session.user.c_name = token.c_name;
+                session.user.email = token.email;
             }
             return session;
         },

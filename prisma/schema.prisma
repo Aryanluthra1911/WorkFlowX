@@ -25,6 +25,10 @@ enum Role {
   Manager
   Member
 }
+enum ChatType {
+  AI
+  User
+}
 
 model Project {
   id             Int       @id @default(autoincrement())
@@ -85,3 +89,20 @@ model Users{
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
+model Conversation {
+  id               Int   @id @default(autoincrement())
+  createdAt        DateTime @default(now())
+  expiresAt        DateTime
+  email            String @unique
+  messages         AiMessage[]
+}
+
+model AiMessage {
+  id             Int      @id @default(autoincrement())
+  conversationId Int
+  role           ChatType 
+  content        String
+  createdAt      DateTime @default(now())
+  Conversation   Conversation @relation(fields: [conversationId], references: [id],onDelete: Cascade)
+}
+

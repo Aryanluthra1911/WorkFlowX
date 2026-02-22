@@ -20,6 +20,7 @@ import { FaUserPlus } from "react-icons/fa";
 export function SidebarBlock() {
     const {data:session} = useSession();
     const [role,setrole] = useState();
+    const [Name,setName] = useState('')
     const router = useRouter()
     
     const admin_manager_links = [
@@ -157,10 +158,14 @@ export function SidebarBlock() {
     useEffect(()=>{
         if(session){
             setrole(session.user.role)
+            setName(session.user.name)
         }
     },[session])
     const links = role==='Member' ? member_links : admin_manager_links
     const [open, setOpen] = useState(false);
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
     return (
         <div
             className={cn(
@@ -187,7 +192,7 @@ export function SidebarBlock() {
                                 router.push('/profile')
                             }}
                             link={{
-                                label: "Aryan Luthra",
+                                label: capitalize(Name),
                                 icon: (
                                     <img
                                         src="https://assets.aceternity.com/manu.png"

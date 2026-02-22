@@ -3,6 +3,7 @@ import { Piechart_Block } from '@/components/Piechart_Block'
 import SmallProjectCard from '@/components/SmallProjectCard'
 import Linechart from '@/components/Linechart'
 const Member_dashboard = () => {
+    console.log("hello")
     return (
         <div className='w-full h-[90%] bg-[#f9fafb] flex flex-col justify-around items-center'>
             <div className='w-full h-[50%] flex justify-around items-center'>

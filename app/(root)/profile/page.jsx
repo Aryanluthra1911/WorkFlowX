@@ -1,5 +1,7 @@
+"use client"
 import Profile_infocard from '@/components/Profile_infocard'
-import React from 'react'
+import { useSession } from 'next-auth/react';
+import React, { useEffect } from 'react'
 
 const page = () => {
     const profileData = [{info_topic:'Email',info:'aryanluthra1911@gmail.com'},{info_topic:'Phone No.',info:'7048997027'},{info_topic:'Years of Experience',info:'7'},{info_topic:'Team Name',info:'dotenv'},{info_topic:'Joining Date',info:'12/1/20'},{info_topic:'Project Assigned',info:'8'},{info_topic:'Performance Rating',info:'4.8/5'},{info_topic:'Project Completed',info:'5'}]

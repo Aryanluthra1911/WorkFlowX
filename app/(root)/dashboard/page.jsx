@@ -18,7 +18,7 @@ const page = () => {
     else if(role === 'Manager'){
         return <Manger_dashboard/>
     }
-    else if(role === 'Manager'){
+    else if(role === 'Member'){
         return <Member_dashboard/>
     }
 }
