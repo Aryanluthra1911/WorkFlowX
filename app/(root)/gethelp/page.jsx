@@ -9,6 +9,7 @@ import { RiSendPlaneFill } from "react-icons/ri";
 import { ThreeDot } from 'react-loading-indicators';
 import { toast } from 'react-toastify';
 import { useRef } from "react";
+import { FaUser } from 'react-icons/fa';
 
 
 
@@ -19,8 +20,10 @@ const page = () => {
     const {data:session} = useSession();
     const [chats,setchats] = useState([])
     const [active,setactive] = useState(false);
+    const [loading,setloading] = useState(false);
     const chatContainerRef = useRef(null);
     const getChats = async(convoId)=>{
+        setloading(true)
         try {
             const res = await api.get(`/Aichats/fetchChats?convoId=${convoId}`)
             if (!res.data.success || !res.data.data) {
@@ -30,13 +33,15 @@ const page = () => {
             setchats(res.data.data.messages || [])
         } catch (error) {
             console.error("Failed to fetch chats", error);
+        }finally{
+            setloading(false)
         }
     }
     useEffect(() => {
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
-    }, [chats, Searching]);
+    }, [chats,Searching]);
 
     useEffect(()=>{
         if (!session?.user?.email) return;
@@ -59,7 +64,7 @@ const page = () => {
             }
         }
         run()
-    },[session,conversationId])
+    },[session])
     const onclick = async (e)=>{
         e.preventDefault();
         if (active) return
@@ -127,12 +132,30 @@ const page = () => {
                 {/* chat with ai area */}
                 <div ref={chatContainerRef} className='w-full h-[73%] bg-[#E8EDF3] overflow-y-auto no-scrollbar space-y-2'>
                     <AiMessageCard idx={{content:"Hello! Welcome to WorkXflow Help Center. I'm here to assist you with any questions about the platform. How can I help you today?"}}/>
-                    {chats ?
-                        chats.map((idx,key)=>(
-                            <AiMessageCard idx={idx} key={key}/>
-                        )) : 
-                    <></>}
-                    {/*  */}
+                    {loading ? 
+                        Array.from({ length: 2}).map((_, index) => (
+                            <div key={index} className=" h-40 w-full flex flex-col justify-around">
+                                <div className="h-15 w-full flex gap-5 items-end justify-end pr-5">
+                                    <div className={`w-10 h-10 bg-gray-300 flex justify-center items-center rounded-full shadow-md`}>
+                                        <FaUser size={24} className='text-gray-700' />
+                                    </div>
+                                    <div className='w-100 h-full bg-gray-300 rounded animate-pulse [animation-duration:1s] '/>
+                                </div>
+                                <div className="pl-5 h-15 w-full gap-5 flex items-end justify-start">
+                                    <div className={`w-10 h-10 bg-[#BFDBFE] flex justify-center items-center rounded-full shadow-md`}>
+                                        <LuBot className='text-[#2563eb]' size={32}  />
+                                    </div>
+                                    <div className='w-100 h-full bg-gray-300 rounded animate-pulse [animation-duration:1s] '/>
+                                </div>
+                            </div>
+                        )):
+                        chats?
+                            chats.map((idx,key)=>(
+                                <AiMessageCard idx={idx} key={key}/>
+                            )) : 
+                            <></>
+                    }
+                    
                     {Searching?
                     <div className='w-full flex items-center justify-start mb-5'>
                         <div className='ml-5 mt-5 w-[80%] min-h-[10%] flex items-end justify-start gap-4'>

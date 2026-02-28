@@ -13,14 +13,7 @@ function capitalize(str) {
 export default function ProtectedShell({ children }) {
     const {data:session,status} =  useSession()
     const pathname = usePathname();
-    if (status === "loading") {
-        return (
-            <div className="h-screen w-screen flex items-center justify-center text-xl">
-                Loading...
-            </div>
-        );
-    }
-    
+
     let currentPath = capitalize(pathname.split("/")[1]) || "Home";
     if (currentPath === "Dashboard"&&session.user.role === 'Member') currentPath = "Dashboard Overview";
     else if (currentPath === "Dashboard"&&session.user.role === 'Manager') currentPath = "Manager Overview";

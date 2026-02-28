@@ -4,16 +4,16 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req) {
     try{
         const body = await req.json();
-        const {title,organisation,deadline,projectManager,projectManagerId,description,c_name} = body
+        const {title,deadline,projectManager,projectManagerId,description,c_name,orgId} = body
         await prisma.project.create({
             data:{
                 title,
                 description,
-                organisation,
                 dueDate:deadline,
                 projectManager,
                 projectManagerId,
-                companyName:c_name
+                companyName:c_name,
+                orgId :orgId
             }
         })
         return NextResponse.json({success:true,message:'project created'})

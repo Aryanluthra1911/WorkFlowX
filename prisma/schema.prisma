@@ -37,7 +37,8 @@ model Project {
   companyName    String
   members        Json ?
   status         Status @default(PENDING)
-  organisation   String
+  organisation   organisation @relation(fields:[orgId],references: [id], onDelete: Cascade)
+  orgId          Int
   startDate      DateTime  @default(now())
   dueDate        String
   completionDate DateTime?
@@ -67,9 +68,8 @@ model Task {
 
 model organisation{
   id             Int       @id @default(autoincrement())
-  companyName    String
-  projects       Json
-  category       String
+  companyName    String    @unique
+  projects       Project[]
 }
 
 model Users{

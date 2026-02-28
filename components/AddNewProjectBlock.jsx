@@ -15,18 +15,19 @@ import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import api from '@/lib/axios';
 import useAdminStore from '@/store/admin/useAdminstore';
+import useUserStore from '@/store/user/useUserstore';
 
 
 const AddNewProjectBlock = () => {
     const [open,setopen] = useState(false);
-    const {data:session} = useSession();
-    const [c_name,setc_name] = useState('')
-    const { latestProjects,setlatestProjects } =useAdminStore()
+    const user = useUserStore((state)=>state.user);
+    const latestProjects = useAdminStore((state) => state.latestProjects)
+    const setlatestProjects = useAdminStore((state) => state.setlatestProjects)
     const [loading,setloading] = useState([])
     const getLatestProjects = async () => {
         setloading(true);
         try{
-            const res = await api.get("/Dashboard/getLatestProjects",{params:{c_name:c_name}});
+            const res = await api.get("/Dashboard/getLatestProjects",{params:{c_name:user?.c_name}});
             setlatestProjects(res.data.data);
         }catch(err){
             console.log(err)
@@ -37,15 +38,8 @@ const AddNewProjectBlock = () => {
         }
     };
     useEffect(()=>{
-        if(session){
-            setc_name(session.user.c_name)
-        }
-    },[session])
-    useEffect(()=>{
-        if(c_name){
-            getLatestProjects()
-        }
-    },[c_name,open])
+        getLatestProjects()
+    },[open])
     return (
         <div className='h-[95%] w-[48%] bg-white rounded-2xl shadow-lg border-2 flex flex-col items-center justify-around border-t-[#16a34a] border-t-3'>
             <div className='h-[15%] w-[90%] flex gap-4 items-center'>
@@ -67,12 +61,15 @@ const AddNewProjectBlock = () => {
             </div>
             <div className='w-[90%] h-[40%] flex flex-col items-center justify-start gap-2'>
                 {loading ? 
-                    <div className='text-[#374151] w-full h-full flex items-center justify-center'>
-                        Loading...
+                Array.from({ length: 2}).map((_, index) => (
+                    <div key={index} className="bg-[#f9fafb] rounded-2xl h-[45%] w-full flex flex-col justify-evenly items-start">
+                        <div className="ml-5 h-4 w-20 bg-gray-300 rounded animate-pulse [animation-duration:1s]"></div>
+                        <div className="ml-5 h-4 w-40 bg-gray-300 rounded animate-pulse [animation-duration:1s]"></div>
                     </div>
+                ))
                 :
-                    latestProjects?.length === 0 ?(
-                        <div className='text-xl text-gray-400'>
+                    !latestProjects ?(
+                        <div className='text-md h-full w-full text-gray-400 flex justify-center items-center'>
                             No Project Data
                         </div>
                     ):(
@@ -92,31 +89,36 @@ const AddNewProjectBlock = () => {
     )
 }
 function ProjectModel({onClose}){
+    const user = useUserStore((state)=>state.user);
     const [title,settitle]= useState('')
     const [description ,setdescription] = useState("")
     const [projectManager,setprojectManger] = useState('')
     const [deadline,setdeadline] = useState('')
     const [organisation,setorganisation] = useState('')
     const [projectManagerId, setprojectMangerId] = useState(null)
-    const {data:session} = useSession();
     const { managers,setmanagers } = useAdminStore()
-    const [c_name,setc_name] = useState('')
     const [loading,setloading] = useState(false)
     const getManagers = async () => {
-        const res = await api.get("/Dashboard/getManagers",{params:{c_name:c_name}});
+        const res = await api.get("/Dashboard/getManagers",{params:{c_name:user?.c_name}});
         setmanagers(res.data);
     };
+    const fetchOrgId = async()=>{
+        const res = await api.post("/Dashboard/fetchOrgId",{org_name:organisation}) 
+        return res.data.orgId;
+        
+    }
     const sendData = async(e)=>{
         e.preventDefault();
         setloading(true)
         try{
+            const id = await fetchOrgId()
             const res = await api.post('/Dashboard/addProject',{title,
                 description,
-                organisation,
                 deadline,
                 projectManager,
                 projectManagerId:parseInt(projectManagerId),
-                c_name
+                c_name:user?.c_name,
+                orgId:id
             })
             if(res.data.success){
                 toast.success(res.data.message);
@@ -135,15 +137,10 @@ function ProjectModel({onClose}){
         }
     }
     useEffect(()=>{
-        if(session){
-            setc_name(session.user.c_name)
-        }
-    },[session])
-    useEffect(()=>{
-        if(c_name){
+        if(user?.c_name){
             getManagers()
         }
-    },[c_name])
+    },[user?.c_name])
     useEffect(() => {
         if (!projectManager || managers.length === 0) return;
         const manager = managers.find(m => m.name === projectManager);

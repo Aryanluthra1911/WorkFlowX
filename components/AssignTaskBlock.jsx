@@ -15,17 +15,17 @@ import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import api from '@/lib/axios';
 import useAdminStore from '@/store/admin/useAdminstore';
+import useUserStore from '@/store/user/useUserstore';
 
 const AssignTaskBlock = () => {
     const [open,setopen] = useState(false);
-    const {data:session} = useSession();
-    const [c_name,setc_name] = useState('')
     const { latestTasks,setlatestTasks } = useAdminStore()
     const [loading,setloading]=useState(false);
+    const user = useUserStore((state)=>state.user);
     const getLatestTasks = async () => {
         setloading(true);
         try {
-            const res = await api.get("/Dashboard/getLatestTasks", {params: { c_name }});
+            const res = await api.get("/Dashboard/getLatestTasks", {params: { c_name:user?.c_name }});
             setlatestTasks(res.data.data);
         } catch (err) {
             console.error("Error fetching tasks:", err);
@@ -35,15 +35,8 @@ const AssignTaskBlock = () => {
         }
     };
     useEffect(()=>{
-        if(session){
-            setc_name(session.user.c_name)
-        }
-    },[session])
-    useEffect(()=>{
-        if(c_name){
-            getLatestTasks()
-        }
-    },[c_name,open])
+        getLatestTasks()
+    },[open])
     return (
         <div className='h-[95%] w-[48%] bg-white rounded-2xl shadow-lg border-2 flex flex-col items-center justify-around border-t-[#2563eb] border-t-3'>
             <div className='h-[15%] w-[90%] flex gap-4 items-center'>
@@ -64,12 +57,16 @@ const AssignTaskBlock = () => {
                 Recent Tasks:
             </div>
             <div className='w-[90%] h-[40%] flex flex-col items-center justify-start gap-2'>
-                {loading ? <div className='text-[#374151] w-full h-full flex items-center justify-center'>
-                    Loading...
-                </div>
+                {loading ? 
+                Array.from({ length: 2}).map((_, index) => (
+                    <div key={index} className="bg-[#f9fafb] rounded-2xl h-[45%] w-full flex flex-col justify-evenly items-start">
+                        <div className="ml-5 h-4 w-20 bg-gray-300 rounded animate-pulse [animation-duration:1s]"></div>
+                        <div className="ml-5 h-4 w-40 bg-gray-300 rounded animate-pulse [animation-duration:1s]"></div>
+                    </div>
+                ))
                 :
-                latestTasks?.length === 0 ?(
-                    <div className='text-xl text-gray-400 h-full w-full flex justify-center items-center'>
+                latestTasks?.length===0 ?(
+                    <div className='text-md text-gray-400 h-full w-full flex justify-center items-center'>
                         No Tasks Data
                     </div>
                 ):(
@@ -88,9 +85,7 @@ const AssignTaskBlock = () => {
     )
 }
 function TaskModel({onClose}){
-    const {data:session} = useSession();
-    const [c_name,setc_name] = useState('')
-
+    const user = useUserStore((state)=>state.user);
     const [title,settitle] = useState('')
     const [description,setdescription] = useState('')
     const [dueDate,setdueDate] = useState('')
@@ -104,14 +99,14 @@ function TaskModel({onClose}){
     const { members,setmembers,projects} = useAdminStore()
 
     const getMembers = async () => {
-        const res = await api.get("/Dashboard/getMembers",{params:{c_name:c_name}});
+        const res = await api.get("/Dashboard/getMembers",{params:{c_name:user?.c_name}});
         setmembers(res.data);
     };
     const sendData = async(e)=>{
         e.preventDefault();
         setloading(true)
         try{
-            const res = await api.post('/Dashboard/createTask',{title,description,dueDate,assignedTo,assignedToId,companyName:c_name,projectId})
+            const res = await api.post('/Dashboard/createTask',{title,description,dueDate,assignedTo,assignedToId,companyName:user?.c_name,projectId})
             if(res.data.success){
                 toast.success(res.data.message);
                 settitle('')
@@ -127,11 +122,6 @@ function TaskModel({onClose}){
             setloading(false);
         }
     }
-    useEffect(()=>{
-        if(session){
-            setc_name(session.user.c_name)
-        }
-    },[session])
     useEffect(() => {
         function onKey(e) {
             if (e.key === "Escape") onClose();
@@ -140,10 +130,10 @@ function TaskModel({onClose}){
         return () => document.removeEventListener("keydown", onKey);
     }, [onClose]);
     useEffect(()=>{
-        if(c_name){
+        if(user?.c_name){
             getMembers()
         }
-    },[c_name])
+    },[user?.c_name])
     useEffect(()=>{
         if(!selectedproject || projects.length === 0) return;
         const data = projects.find(p => p.title === selectedproject)

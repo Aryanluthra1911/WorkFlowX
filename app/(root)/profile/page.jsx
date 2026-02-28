@@ -1,10 +1,27 @@
 "use client"
 import Profile_infocard from '@/components/Profile_infocard'
+import useUserStore from '@/store/user/useUserstore';
 import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react'
+import api from '@/lib/axios'
 
 const page = () => {
-    const profileData = [{info_topic:'Email',info:'aryanluthra1911@gmail.com'},{info_topic:'Phone No.',info:'7048997027'},{info_topic:'Years of Experience',info:'7'},{info_topic:'Team Name',info:'dotenv'},{info_topic:'Joining Date',info:'12/1/20'},{info_topic:'Project Assigned',info:'8'},{info_topic:'Performance Rating',info:'4.8/5'},{info_topic:'Project Completed',info:'5'}]
+    const {data:session} = useSession()
+    const user = useUserStore((state)=>state.user)
+    const setUser = useUserStore((state)=>state.setUser)
+    useEffect(()=>{
+        if(!session?.user?.email) return
+        const fetchdata = async()=>{
+            try {
+                const res = await api.get('/Dashboard/fetchUserData' ,{params:{email:session.user.email}})
+                setUser(res.data.data); 
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchdata()
+    },[session])
+    const profileData = [{info_topic:'Email',info:user?.email},{info_topic:'Phone No.',info:user?.phone},{info_topic:'Years of Experience',info:user?.yearsOfExperience},{info_topic:'Role',info:user?.role},{info_topic:'Joining Date',info:user?.joiningDate},{info_topic:'Task Assigned',info:user?.taskAssigned},{info_topic:'Performance Rating',info:user?.performanceRating},{info_topic:'Project Completed',info:user?.projectCompleted}]
     return (
         <div className='w-full h-[90%] bg-[#f9fafb] flex flex-col justify-around items-center'>
             <div className='w-[95%] h-[25%] flex items-center justify-around rounded-2xl bg-white border-2'>

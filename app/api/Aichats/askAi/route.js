@@ -6,7 +6,6 @@ export async function GET(req) {
         const { searchParams } = new URL(req.url);
         const previous_chats = searchParams.get('previous_chats');
         const current_message = searchParams.get('current_message');
-        console.log(previous_chats,current_message);
         const response = await ai.models.generateContent({
             model: "gemini-3-flash-preview",
             contents: ` You are an intelligent AI assistant.
@@ -46,7 +45,6 @@ export async function GET(req) {
             console.log(response);
         return NextResponse.json({message:"response extracted",success:true,reply:response})
     } catch (error) {
-        throw error
         return NextResponse.json({message:"api error",success:false,error:error})
     }
 }

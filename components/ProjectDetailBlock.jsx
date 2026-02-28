@@ -5,17 +5,17 @@ import ProjectDetailCard from './ProjectDetailCard';
 import { useSession } from 'next-auth/react';
 import api from '@/lib/axios';
 import useAdminStore from '@/store/admin/useAdminstore';
+import useUserStore from '@/store/user/useUserstore';
 
 const ProjectDetailBlock = () => {
-  const [c_name,setc_name] = useState('')
-  const {data:session} = useSession();
+  const user = useUserStore((state)=>state.user);
   const { projects,setprojects,latestProjects,latestTasks } = useAdminStore();
   const [loading,setloading] = useState(false)
 
   const getprojects = async()=>{
     setloading(true);
     try{
-      const res = await api.get("/Dashboard/getProjects",{params:{c_name:c_name}})
+      const res = await api.get("/Dashboard/getProjects",{params:{c_name:user?.c_name}})
       setprojects(res.data.data);
     }catch(err){
       console.log(err)
@@ -26,15 +26,8 @@ const ProjectDetailBlock = () => {
     }
   }
   useEffect(()=>{
-    if(session){
-      setc_name(session.user.c_name)
-    }
-  },[session])
-  useEffect(()=>{
-    if(c_name){
-      getprojects()
-    }
-  },[c_name,latestProjects,latestTasks])
+    getprojects()
+  },[latestProjects,latestTasks])
 
 
     return (
@@ -54,11 +47,11 @@ const ProjectDetailBlock = () => {
                 <div className='w-[20%] h-full text-xs font-light flex items-center justify-center '>Status</div>
             </div>
             <div className='w-[95%] h-[70%] overflow-y-auto no-scrollbar space-y-2'>
-              {loading ? <div className='text-[#374151] w-full h-full flex items-center justify-center'>
-                Loading...
-              </div>
+              {loading ? Array.from({ length: 6 }).map((_, index) => (
+                <div className='w-full min-h-10 bg-gray-200 rounded-2xl animate-pulse [animation-duration:1s]' key={index} />
+              ))
               :
-              projects?.length===0 ? <div className='text-xl text-gray-400 w-full h-full flex items-center justify-center'>
+              projects?.length===0 ? <div className='text-md text-gray-400 w-full h-full flex items-center justify-center'>
                 No Project Data Found
               </div>:(
                 projects.map((idx,key)=>{

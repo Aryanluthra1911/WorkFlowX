@@ -10,6 +10,11 @@ export async function GET(req){
         const projects = await prisma.project.findMany({
             where: {companyName: c_name},
             include:{
+                organisation: {
+                    select: {
+                        companyName: true
+                    }
+                },
                 _count:{
                     select:{
                         task:true,

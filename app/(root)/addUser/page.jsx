@@ -8,6 +8,7 @@ import { LuSearch } from "react-icons/lu";
 import axios from 'axios';
 import { toast } from "react-toastify";
 import { useSession } from 'next-auth/react';
+import api from '@/lib/axios'
 import {
     Select,
     SelectContent,
@@ -15,10 +16,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import useUserStore from '@/store/user/useUserstore';
 
 
 const page = () => {
-    
+    const [users,setusers] = useState([]);
     const [activeid, setactiveid] = useState(null)
     const {data:session} = useSession();
     const [email,setemail]=useState('');
@@ -29,12 +31,30 @@ const page = () => {
     const [yop,setyop]=useState('')
     const [joiningdate,setjoiningdate]= useState('')
     const [loading,setloading] = useState(false)
-    const [cname,setcname] = useState('')
+    const [loading2,setloading2] = useState(false)
+    const user = useUserStore((state)=>state.user);
+    const setUser = useUserStore((state)=>state.setUser);
 
-    useEffect(()=>{
-        if(session){
-            setcname(session.user.c_name)
+    const [showNoData, setShowNoData] = useState(false);
+
+    useEffect(() => {
+        if (users?.length === 0) {
+            setTimeout(() => {
+                setShowNoData(true);
+            }, 2000);
         }
+    }, [users]);
+    useEffect(()=>{
+        if(!session?.user?.email) return
+        const fetchdata = async()=>{
+            try {
+                const res = await api.get('/Dashboard/fetchUserData' ,{params:{email:session.user.email}})
+                setUser(res.data.data); 
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchdata()
     },[session])
     var sno = 1;
     const sendData = async(e)=>{
@@ -42,7 +62,7 @@ const page = () => {
         setloading(true)
         try{
             const res = await axios.post('/api/UserControls/createUser',{
-                name,email,role,password,years_of_experience:Number(yop),joining_date:joiningdate,phoneno,cname
+                name,email,role,password,years_of_experience:Number(yop),joining_date:joiningdate,phoneno,cname:user?.c_name
             })
             if(res.data.success){
                 toast.success(res.data.message)
@@ -66,17 +86,25 @@ const page = () => {
             setloading(false);
         }
     }
-    const [users,setusers] = useState([]);
+    
     const getusers = async()=>{
-        const res = await axios.get('/api/UserControls/viewUsers',{params:{cname:cname}})
-        setusers(res.data);   
+        setloading2(true)
+        try {
+            const res = await axios.get('/api/UserControls/viewUsers',{params:{cname:user?.c_name}})
+            setusers(res.data); 
+        } catch (error) {
+            throw error
+        }
+        finally{
+            setloading2(false)
+        }
     }
     useEffect(()=>{
-        if(cname){
+        if(user?.c_name){
             getusers()
         }
         
-    },[cname])
+    },[user?.c_name])
     return (
         <div className='w-full h-[90%] bg-[#f9fafb] flex justify-evenly items-center'>
             <div className='w-[49%] h-[97%] rounded-2xl bg-white shadow-md border-2 p-2 flex flex-col items-center justify-evenly'>
@@ -207,7 +235,18 @@ const page = () => {
                     <div className='h-full w-[20%] text-xs flex justify-center items-center font-light'>Role</div>
                 </div>
                 <div className='w-[97%] h-[60%] overflow-y-auto no-scrollbar space-y-3'>
-                    {users.map((idx,key)=>{
+                    {loading2?
+                    Array.from({ length: 7}).map((_, index) => (
+                        <div className='w-full min-h-10 bg-gray-200 rounded-2xl animate-pulse [animation-duration:1s]' key={index} />
+                    ))
+                    :
+                    users?.length===0 && showNoData?
+                        <div className='w-full h-full flex justify-center items-center text-xl text-gray-400'>
+                            No User Data
+                        </div>
+                        
+                    :
+                    users.map((idx,key)=>{
                         return(
                             <div onClick={()=>{setactiveid(idx.sno)}} key={key} className={`${activeid===idx.email?'border-black shadow:md bg-gray-100':""} w-full h-10 hover:bg-gray-100 bg-[#f9fafb] border rounded-2xl flex justify-around items-center transform transition-all duration-200 `}>
                                 <div className='h-full w-[10%] text-xs flex justify-center items-center font-light'>{sno++}</div>
@@ -216,7 +255,9 @@ const page = () => {
                                 <div className='h-full w-[20%] text-xs flex justify-center items-center font-light'>{idx.role}</div>
                             </div>
                         )
-                    })}
+                    })
+                    }
+                    
                 </div>
                 <div className='w-[97%] h-[8%] flex justify-evenly items-center'>
                     <button className='font-bold w-[30%] h-[80%] border-2 bg-white border-[#2563eb] rounded-2xl text-[#2563eb]  hover:text-white hover:bg-[#2563eb] transform transition-all duration-200'>
