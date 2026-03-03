@@ -68,7 +68,7 @@ const AddNewProjectBlock = () => {
                     </div>
                 ))
                 :
-                    !latestProjects ?(
+                    latestProjects.length===0 ?(
                         <div className='text-md h-full w-full text-gray-400 flex justify-center items-center'>
                             No Project Data
                         </div>
@@ -98,14 +98,14 @@ function ProjectModel({onClose}){
     const [projectManagerId, setprojectMangerId] = useState(null)
     const { managers,setmanagers } = useAdminStore()
     const [loading,setloading] = useState(false)
+    
     const getManagers = async () => {
         const res = await api.get("/Dashboard/getManagers",{params:{c_name:user?.c_name}});
         setmanagers(res.data);
     };
     const fetchOrgId = async()=>{
-        const res = await api.post("/Dashboard/fetchOrgId",{org_name:organisation}) 
+        const res = await api.post("/Dashboard/fetchOrgId",{org_name:organisation,companyName:user?.c_name}) 
         return res.data.orgId;
-        
     }
     const sendData = async(e)=>{
         e.preventDefault();

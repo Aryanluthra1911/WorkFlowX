@@ -2,13 +2,17 @@
 import React, { useEffect, useState } from 'react'
 import OrgansiationCard from '@/components/OrgansiationCard';
 import api from '@/lib/axios';
+import { useSession } from 'next-auth/react';
 const page = () => {
     const [organisations, setorganisations] = useState([]); 
     const [loading, setLoading] = useState(true);
+    const {data:session} = useSession()
+
     useEffect(()=>{
+        if (!session?.user?.c_name) return;
         const fetchOrganisation = async ()=>{
             try{
-                const response = await api.get('/organisation/fetchOrganisations');
+                const response = await api.get('/organisation/fetchOrganisations',{params:{companyName:session?.user?.c_name}});
                 setorganisations(response.data)
             } catch (err) {
                 console.error(err);
@@ -17,7 +21,7 @@ const page = () => {
             }
         }
         fetchOrganisation()
-    },[])
+    },[session])
     if (loading) return <div className='w-full h-[90%] bg-[#f9fafb] flex justify-evenly items-start overflow-y-auto flex-wrap'>
         {Array.from({ length: 10}).map((_, index) => (
             <div key={index} className="w-[45%] h-[15%] animate-pulse [animation-duration:1s] rounded-2xl bg-[#ffffff] transition-all duration-300 hover:scale-103 hover:shadow-lg shadow-xl mt-4 flex flex-col justify-center items-center border-b-4 border-r-4 border-[#2c84db]">

@@ -29,6 +29,12 @@ enum ChatType {
   AI
   User
 }
+model organisation{
+  id                  Int       @id @default(autoincrement())
+  organisationName    String    @unique
+  projects            Project[]
+  companyName         String
+}
 
 model Project {
   id             Int       @id @default(autoincrement())
@@ -37,8 +43,8 @@ model Project {
   companyName    String
   members        Json ?
   status         Status @default(PENDING)
-  organisation   organisation @relation(fields:[orgId],references: [id], onDelete: Cascade)
   orgId          Int
+  organisation   organisation @relation(fields:[orgId],references: [id], onDelete: Cascade)
   startDate      DateTime  @default(now())
   dueDate        String
   completionDate DateTime?
@@ -66,11 +72,7 @@ model Task {
   updatedAt      DateTime  @updatedAt
 }
 
-model organisation{
-  id             Int       @id @default(autoincrement())
-  companyName    String    @unique
-  projects       Project[]
-}
+
 
 model Users{
   id             Int       @id @default(autoincrement())

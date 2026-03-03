@@ -4,13 +4,14 @@ import { prisma } from "@/lib/prisma";
 export async function POST(req) {
     try {
         const body = await req.json();
-        const { org_name } = body
-        console.log(org_name);
+        const { org_name , companyName } = body
+        console.log(org_name,companyName);
         const organisation = await prisma.organisation.upsert({
-            where:{companyName:org_name},
+            where:{organisationName:org_name},
             update:{},
             create:{
-                companyName:org_name
+                organisationName:org_name,
+                companyName:companyName,
             }
         })
         return NextResponse.json({success:true,orgId:organisation.id})
