@@ -81,7 +81,7 @@ const page = () => {
                 </div>
                 <div className=' w-[40%] h-[90%] flex gap-5 justify-center items-center'>
                     {filter.map((idx,key) => (
-                        <button onClick={()=>setactive(idx)} key={key} className={`${active === idx?"bg-blue-400 text-white scale-105":"bg-white text-gray-500"} hover:scale-104 hover:shadow-2xl transition-all duration-500 h-[90%] min-w-10 w-auto p-2 border shadow-md  rounded-2xl flex items-center justify-center text-sm`}>{idx}</button>
+                        <button onClick={()=>setactive(idx)} key={key} className={`${active === idx?"bg-[#1e293b] text-white scale-105":"bg-white text-gray-500"} hover:scale-104 hover:shadow-2xl transition-all duration-500 h-[90%] min-w-10 w-auto p-2 border shadow-md  rounded-2xl flex items-center justify-center text-sm`}>{idx}</button>
                     ))}
                 </div>
             </div>
