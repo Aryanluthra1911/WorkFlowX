@@ -4,11 +4,18 @@ import useUserStore from '@/store/user/useUserstore';
 import { useSession } from 'next-auth/react';
 import React, { useEffect } from 'react'
 import api from '@/lib/axios'
+import usePageStore from '@/store/pages/usePageStore';
 
 const page = () => {
     const {data:session} = useSession()
     const user = useUserStore((state)=>state.user)
     const setUser = useUserStore((state)=>state.setUser)
+    const setActivePage = usePageStore((state)=>state.setActivePage)
+    const setTitle = usePageStore((state)=>state.setTitle)
+    useEffect(()=>{
+        setActivePage("Profile")
+        setTitle("Profile")
+    },[])
     useEffect(()=>{
         if(!session?.user?.email) return
         const fetchdata = async()=>{

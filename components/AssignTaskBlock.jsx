@@ -11,7 +11,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import api from '@/lib/axios';
 import useAdminStore from '@/store/admin/useAdminstore';
@@ -25,8 +24,16 @@ const AssignTaskBlock = () => {
     const getLatestTasks = async () => {
         setloading(true);
         try {
-            const res = await api.get("/Dashboard/getLatestTasks", {params: { c_name:user?.c_name }});
-            setlatestTasks(res.data.data);
+            if(user?.role === "Admin"){
+                const res = await api.get("/Dashboard/getLatestTasks", {params: { c_name:user?.c_name }});
+                setlatestTasks(res.data.data);
+            }
+            else if(user?.role === "Manager"){
+                const res = await api.get("/Manager/Dashboard/GetLatestTasks", {params: { managedById:user?.id }});
+                setlatestTasks(res.data.data);
+            }
+            
+            
         } catch (err) {
             console.error("Error fetching tasks:", err);
             setlatestTasks([]);

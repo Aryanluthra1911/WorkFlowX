@@ -4,6 +4,7 @@ import React, { useState, createContext, useContext, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { usePathname } from "next/navigation";
+import usePageStore from "@/store/pages/usePageStore";
 
 
 const SidebarContext = createContext(undefined);
@@ -134,15 +135,9 @@ export const SidebarLink = ({
   ...props
 }) => {
   const { open, animate } = useSidebar();
-  const pathname = usePathname();
-  const [active,setactive] = useState(false)
-  useEffect(() => {
-    if (pathname === link.href) {
-      setactive(true);
-    } else {
-      setactive(false);
-    }
-  }, [pathname, link.href]);
+  const activePage = usePageStore((state) => state.activePage)
+  const active = link.label === activePage
+  
   return (
     <div
       onClick={onClick}

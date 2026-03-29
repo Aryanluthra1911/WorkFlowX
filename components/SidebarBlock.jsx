@@ -60,22 +60,15 @@ export function SidebarBlock() {
             ),
         },
         {
-            label: "Settings",
-            href: "/settings",
-            icon: (
-                <IconSettings className="h-5 w-5 shrink-0 text-white dark:text-neutral-200" />
-            ),
-        },
-        {
             label: "User Activity",
-            href: "/activity",
+            href: "/user_activity",
             icon: (
                 <LuActivity className="h-5 w-5 shrink-0 text-white dark:text-neutral-200" />
             ),
         },
         {
-            label: "Add User",
-            href: "/addUser",
+            label: "User Controls",
+            href: "/user_controls",
             icon: (
                 <FaUserPlus className="h-5 w-5 shrink-0 text-white dark:text-neutral-200" />
             ),
@@ -167,17 +160,11 @@ export function SidebarBlock() {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
     return (
-        <div
-            className={cn(
-                " flex  max-w-7xl flex-1 flex-col overflow-hidden  md:flex-row dark:border-neutral-700 dark:bg-neutral-800 h-full w-full"
-            )}
-        >
+        <div className={cn(" flex  max-w-7xl flex-1 flex-col overflow-hidden  md:flex-row dark:border-neutral-700 dark:bg-neutral-800 h-full w-full")}>
             <Sidebar open={open} setOpen={setOpen} animate={false}>
                 <SidebarBody className="justify-between gap-10">
                     <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-                        <>
-                            <Logo/>
-                        </>
+                        <Logo/>
                         <div className="mt-8 flex flex-col gap-3">
                             {links.map((link, idx) => (
                                 <SidebarLink key={idx} link={link} onClick={(e)=>{

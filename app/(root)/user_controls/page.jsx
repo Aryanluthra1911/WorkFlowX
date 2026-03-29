@@ -5,9 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { LuUsers } from "react-icons/lu";
 import { LuSearch } from "react-icons/lu";
-import axios from 'axios';
 import { toast } from "react-toastify";
-import { useSession } from 'next-auth/react';
 import api from '@/lib/axios'
 import {
     Select,
@@ -17,12 +15,12 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import useUserStore from '@/store/user/useUserstore';
+import usePageStore from '@/store/pages/usePageStore';
 
 
 const page = () => {
     const [users,setusers] = useState([]);
     const [activeid, setactiveid] = useState(null)
-    const {data:session} = useSession();
     const [email,setemail]=useState('');
     const [password,setpassword]=useState('');
     const [name,setname]=useState('');
@@ -31,12 +29,16 @@ const page = () => {
     const [yop,setyop]=useState('')
     const [joiningdate,setjoiningdate]= useState('')
     const [loading,setloading] = useState(false)
-    const [loading2,setloading2] = useState(false)
+    const [loading2,setloading2] = useState(true)
     const user = useUserStore((state)=>state.user);
-    const setUser = useUserStore((state)=>state.setUser);
 
     const [showNoData, setShowNoData] = useState(false);
-
+    const setActivePage = usePageStore((state)=>state.setActivePage)
+    const setTitle = usePageStore((state)=>state.setTitle)
+    useEffect(()=>{
+        setActivePage("User Controls")
+        setTitle("User Controls")
+    },[])
     useEffect(() => {
         if (users?.length === 0) {
             setTimeout(() => {
@@ -44,24 +46,12 @@ const page = () => {
             }, 2000);
         }
     }, [users]);
-    useEffect(()=>{
-        if(!session?.user?.email) return
-        const fetchdata = async()=>{
-            try {
-                const res = await api.get('/Dashboard/fetchUserData' ,{params:{email:session.user.email}})
-                setUser(res.data.data); 
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        fetchdata()
-    },[session])
     var sno = 1;
     const sendData = async(e)=>{
         e.preventDefault();
         setloading(true)
         try{
-            const res = await axios.post('/api/UserControls/createUser',{
+            const res = await api.post('/UserControls/createUser',{
                 name,email,role,password,years_of_experience:Number(yop),joining_date:joiningdate,phoneno,cname:user?.c_name
             })
             if(res.data.success){
@@ -88,10 +78,16 @@ const page = () => {
     }
     
     const getusers = async()=>{
-        setloading2(true)
         try {
-            const res = await axios.get('/api/UserControls/viewUsers',{params:{cname:user?.c_name}})
-            setusers(res.data); 
+            if(user?.role==="Admin"){
+                const res = await api.get('/UserControls/viewUsers',{params:{cname:user?.c_name}})
+                setusers(res.data); 
+            }
+            else if(user?.role === "Manager"){
+                const res = await api.get('Manager/UserControl/ViewUsers',{params:{cname:user?.c_name}})
+                setusers(res.data); 
+            }
+            
         } catch (error) {
             throw error
         }
@@ -103,7 +99,6 @@ const page = () => {
         if(user?.c_name){
             getusers()
         }
-        
     },[user?.c_name])
     return (
         <div className='w-full h-[90%] bg-[#f9fafb] flex justify-evenly items-center'>
@@ -112,11 +107,11 @@ const page = () => {
                     <div className='w-12 h-12 bg-[#dbeafe] flex justify-center items-center rounded-2xl'>
                         <FaUserPlus className="h-7 w-7 shrink-0 text-[#2563eb] dark:text-neutral-200" />
                     </div>
-                    <div className='text-[#2563eb] font-bold'>Create User</div>
+                    <div className='text-[#2563eb] font-bold'>Create {user?.role ==="Admin"?" User":"Member"}</div>
                 </div>
                 <form onSubmit={sendData} className='w-[97%] h-[85%]'>
                     <div className='w-full h-[90%] flex items-center justify-around'>
-                        <div className='w-[50%] h-full flex flex-col justify-center items-center'>
+                        <div className='w-[50%] h-full flex flex-col justify-start pt-5 gap-2 items-center'>
                             <div className='w-[90%] h-[23%] bg-white grid '>
                                 <Label>Full Name</Label>
                                 <Input
@@ -167,19 +162,23 @@ const page = () => {
                             </div>
                             
                         </div>
-                        <div className='w-[50%] h-full flex flex-col justify-center items-center'>
-                            <div className='w-[90%] h-[23%] bg-white grid '>
-                                <Label>Role</Label>
-                                <Select value={role} onValueChange={setrole} className={'w-full'}>
-                                    <SelectTrigger className="w-[full]">
-                                        <SelectValue placeholder="Enter Role" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Member">Member</SelectItem>
-                                        <SelectItem value="Manager">Manager</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div className='w-[50%] h-full flex flex-col justify-start items-center pt-5 gap-2'>
+                            {
+                                user?.role==="Admin"?
+                                    <div className='w-[90%] h-[23%] bg-white grid '>
+                                        <Label>Role</Label>
+                                        <Select value={role} onValueChange={setrole} className={'w-full'}>
+                                            <SelectTrigger className="w-[full]">
+                                                <SelectValue placeholder="Enter Role" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="Member">Member</SelectItem>
+                                                <SelectItem value="Manager">Manager</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>:
+                                    <></>
+                            }
                             <div className='w-[90%] h-[23%] bg-white grid '>
                                 <Label>Password</Label>
                                 <Input

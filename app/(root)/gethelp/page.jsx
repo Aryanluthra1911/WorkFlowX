@@ -2,7 +2,6 @@
 import AiMessageCard from '@/components/AiMessageCard';
 import { Input } from '@/components/ui/input';
 import api from '@/lib/axios';
-import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
 import { LuBot } from "react-icons/lu";
 import { RiSendPlaneFill } from "react-icons/ri";
@@ -10,6 +9,8 @@ import { ThreeDot } from 'react-loading-indicators';
 import { toast } from 'react-toastify';
 import { useRef } from "react";
 import { FaUser } from 'react-icons/fa';
+import usePageStore from '@/store/pages/usePageStore';
+import useUserStore from '@/store/user/useUserstore';
 
 
 
@@ -17,13 +18,18 @@ const page = () => {
     const [conversationId,setconversationId] = useState(null)
     const [message,setmessage] = useState('');
     const [Searching,setSearching] = useState(false)
-    const {data:session} = useSession();
+    const user = useUserStore((state)=>state.user);
     const [chats,setchats] = useState([])
     const [active,setactive] = useState(false);
-    const [loading,setloading] = useState(false);
+    const [loading,setloading] = useState(true);
     const chatContainerRef = useRef(null);
+    const setActivePage = usePageStore((state)=>state.setActivePage)
+    const setTitle = usePageStore((state)=>state.setTitle)
+    useEffect(()=>{
+        setActivePage("Get Help")
+        setTitle("Ask AI")
+    },[])
     const getChats = async(convoId)=>{
-        setloading(true)
         try {
             const res = await api.get(`/Aichats/fetchChats?convoId=${convoId}`)
             if (!res.data.success || !res.data.data) {
@@ -44,18 +50,18 @@ const page = () => {
     }, [chats,Searching]);
 
     useEffect(()=>{
-        if (!session?.user?.email) return;
+        if (!user) return;
         const run = async()=>{
             try {
                 await api.delete('/Aichats/deleteExpiredConvo')
-                const res = await api.get(`/Aichats/getConvoId?email=${session.user.email}`)
+                const res = await api.get(`/Aichats/getConvoId?email=${user?.email}`)
                 if(res.data.success){
                     const id = res.data.data?.id;
                     setconversationId(id)
                     getChats(id)
                 }
                 else{
-                    const res = await api.post('/Aichats/createNewConvo', { email:session.user.email });
+                    const res = await api.post('/Aichats/createNewConvo', { email:user?.email });
                     let convoId = res.data.conversationId;
                     setconversationId(convoId); 
                 }
@@ -64,7 +70,7 @@ const page = () => {
             }
         }
         run()
-    },[session])
+    },[user])
     const onclick = async (e)=>{
         e.preventDefault();
         if (active) return
@@ -112,7 +118,6 @@ const page = () => {
     return (
         <div className='w-full h-[90%] bg-[#f9fafb] flex justify-evenly items-center'>
             <div className='w-[98%] h-[97%] rounded-2xl bg-white shadow-md border-2  flex flex-col items-center justify-between'>
-                {/* title */}
                 <div className='w-full h-[12%] bg-[#2563eb] rounded-t-xl flex items-center justify-start gap-2 border-2 border-[#2563eb]'>
                     <div className='w-[10%] h-[70%] flex items-center justify-center '>
                         <div className='w-12 h-12 bg-[#5081ee] flex justify-center items-center rounded-full'>
@@ -129,7 +134,6 @@ const page = () => {
                         </div>
                     </div>
                 </div>
-                {/* chat with ai area */}
                 <div ref={chatContainerRef} className='w-full h-[73%] bg-[#E8EDF3] overflow-y-auto no-scrollbar space-y-2'>
                     <AiMessageCard idx={{content:"Hello! Welcome to WorkXflow Help Center. I'm here to assist you with any questions about the platform. How can I help you today?"}}/>
                     {loading ? 
@@ -139,13 +143,13 @@ const page = () => {
                                     <div className={`w-10 h-10 bg-gray-300 flex justify-center items-center rounded-full shadow-md`}>
                                         <FaUser size={24} className='text-gray-700' />
                                     </div>
-                                    <div className='w-100 h-full bg-gray-300 rounded animate-pulse [animation-duration:1s] '/>
+                                    <div className='w-100 h-full bg-gray-300 rounded-2xl animate-pulse [animation-duration:1s] '/>
                                 </div>
                                 <div className="pl-5 h-15 w-full gap-5 flex items-end justify-start">
                                     <div className={`w-10 h-10 bg-[#BFDBFE] flex justify-center items-center rounded-full shadow-md`}>
                                         <LuBot className='text-[#2563eb]' size={32}  />
                                     </div>
-                                    <div className='w-100 h-full bg-gray-300 rounded animate-pulse [animation-duration:1s] '/>
+                                    <div className='w-100 h-full bg-gray-300 rounded-2xl animate-pulse [animation-duration:1s] '/>
                                 </div>
                             </div>
                         )):
@@ -168,7 +172,6 @@ const page = () => {
                         </div>
                     </div> :<></>}
                 </div>
-                {/* input box to send message */}
                 <form onSubmit={onclick} className='w-full h-[15%] flex items-center justify-center gap-4'>
                     <div className='w-[80%] flex items-center justify-around'>
                         <Input

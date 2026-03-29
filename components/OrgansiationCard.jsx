@@ -1,12 +1,16 @@
 'use client'
+import usePageStore from '@/store/pages/usePageStore'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
 const OrgansiationCard = ({idx}) => {
+    const setTitle = usePageStore((state) => state.setTitle)
+    
     const router = useRouter()
     return (
         <div onClick={()=>{
             router.push(`/organisation/${idx.id}`)
+            setTitle(`Organisation -> ${idx.organisationName}`)
         }}className='w-[45%] h-[15%]  rounded-2xl bg-[#ffffff] transition-all duration-300 hover:scale-103 hover:shadow-lg shadow-xl mt-4 flex flex-col justify-center items-center border-b-4 border-r-4 border-gray-400 '>
             <div className='w-[90%] h-[40%] flex justify-around items-center'>
                 <div className='w-13 h-13 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl text-2xl flex justify-center items-center font-semibold text-white'>

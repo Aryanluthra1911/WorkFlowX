@@ -1,8 +1,9 @@
 'use client'
 import ChatProfileCard from '@/components/ChatProfileCard'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoChatbubblesOutline } from "react-icons/io5";
 import { FiSend } from "react-icons/fi";
+import usePageStore from '@/store/pages/usePageStore';
 
 const page = () => {
     const DM_data = [{name:'Aryan Luthra',id:'1',latest_message:'the api work is done'},{name:'Aryan Luthra',id:'2',latest_message:'the api work is done'},{name:'Aryan Luthra',id:'3',latest_message:'the api work is done'},{name:'Aryan Luthra',id:'4',latest_message:'the api work is done'},{name:'Aryan Luthra',id:'5',latest_message:'the api work is done'},{name:'Aryan Luthra',id:'6',latest_message:'the api work is done'}]
@@ -11,7 +12,12 @@ const page = () => {
     
     const [id,setid] = useState(null)
     const chatdata =id<10 ? DM_data.filter(idx => idx.id === id) : project_Group.filter(idx=>idx.id===id)
-
+    const setActivePage = usePageStore((state)=>state.setActivePage)
+    const setTitle = usePageStore((state)=>state.setTitle)
+    useEffect(()=>{
+        setActivePage("Chats")
+        setTitle("Chats")
+    },[])
     return (
         <div className='w-full h-[90%] bg-[#f9fafb] flex justify-around items-center'>
             <div className='w-[25%] h-full '>

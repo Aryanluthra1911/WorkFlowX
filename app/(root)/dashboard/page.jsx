@@ -3,28 +3,19 @@ import Admin_dashboard from '@/components/Admin_dashboard'
 import Manger_dashboard from '@/components/Manger_dashboard'
 import Member_dashboard from '@/components/Member_dashboard'
 import api from '@/lib/axios'
+import usePageStore from '@/store/pages/usePageStore'
 import useUserStore from '@/store/user/useUserstore'
 
-import { useSession } from 'next-auth/react'
+
 import React, { useEffect, useState } from 'react'
 
 const page = () => {
-    const {data:session}= useSession()
+
     const user = useUserStore((state)=>state.user);
-    const setUser = useUserStore((state)=>state.setUser);
-    
+    const setActivePage = usePageStore((state)=>state.setActivePage)
     useEffect(()=>{
-        if(!session?.user?.email) return
-        const fetchdata = async()=>{
-            try {
-                const res = await api.get('/Dashboard/fetchUserData' ,{params:{email:session.user.email}})
-                setUser(res.data.data); 
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        fetchdata()
-    },[session])
+        setActivePage("Dashboard")
+    },[])
     if(user?.role === 'Admin'){
         return <Admin_dashboard/>
     }

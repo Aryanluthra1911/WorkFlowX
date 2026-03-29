@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { LuFileText } from "react-icons/lu";
 import ProjectDetailCard from './ProjectDetailCard';
-import { useSession } from 'next-auth/react';
+
 import api from '@/lib/axios';
 import useAdminStore from '@/store/admin/useAdminstore';
 import useUserStore from '@/store/user/useUserstore';
@@ -15,8 +15,14 @@ const ProjectDetailBlock = () => {
   const getprojects = async()=>{
     setloading(true);
     try{
-      const res = await api.get("/Dashboard/getProjects",{params:{c_name:user?.c_name}})
-      setprojects(res.data.data);
+      if(user.role === "Admin"){
+        const res = await api.get("/Dashboard/getProjects",{params:{c_name:user?.c_name}})
+        setprojects(res.data.data);
+      }
+      else if(user.role==="Manager"){
+        const res = await api.get("/Manager/Dashboard/GetProjectsDetails",{params:{managedById:user?.id}})
+        setprojects(res.data.data);
+      }
     }catch(err){
       console.log(err)
       setprojects([]);
@@ -40,7 +46,7 @@ const ProjectDetailBlock = () => {
             </div>
             <div className='w-[95%] h-[5%] border-b-2 pb-2 rounded-2xl flex '>
                 <div className='w-[5%] h-full text-xs font-light flex items-center justify-center '>S no.</div>
-                <div className='w-[30%] h-full text-xs font-light flex items-center justify-center '>title</div>
+                <div className='w-[30%] h-full text-xs font-light flex items-center justify-center '>Title</div>
                 <div className='w-[10%] h-full text-xs font-light flex items-center justify-center '>Deadline</div>
                 <div className='w-[25%] h-full text-xs font-light flex items-center justify-center '>Organisation</div>
                 <div className='w-[10%] h-full text-xs font-light flex items-center justify-center '>Managed By</div>

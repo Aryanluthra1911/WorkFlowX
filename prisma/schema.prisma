@@ -42,7 +42,7 @@ model Project {
   description    String
   companyName    String
   members        Json ?
-  status         Status @default(PENDING)
+  status         Status @default(ACTIVE)
   orgId          Int
   organisation   organisation @relation(fields:[orgId],references: [id], onDelete: Cascade)
   startDate      DateTime  @default(now())
@@ -62,7 +62,7 @@ model Task {
   description    String
   assignedToId   Int
   assignedTo     String
-  status         Status    @default(PENDING)
+  status         Status    @default(ACTIVE)
   dueDate        String
   projectId      Int
   project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)

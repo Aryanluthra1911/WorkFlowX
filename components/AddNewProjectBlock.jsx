@@ -11,7 +11,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import api from '@/lib/axios';
 import useAdminStore from '@/store/admin/useAdminstore';

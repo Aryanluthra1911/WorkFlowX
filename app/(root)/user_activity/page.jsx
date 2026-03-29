@@ -1,20 +1,27 @@
 "use client"
 import { Input } from '@/components/ui/input'
-import React, { useState } from 'react'
+import usePageStore from '@/store/pages/usePageStore'
+import React, { useEffect, useState } from 'react'
 
 const page = () => {
+    const setActivePage = usePageStore((state)=>state.setActivePage)
+    const setTitle = usePageStore((state)=>state.setTitle)
+    useEffect(()=>{
+        setActivePage("User Activity")
+        setTitle("User Activity")
+    },[])
     const data = [
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Online",onlineTime:"5h 42m",lastSeen:"Now"},
-        {name:"Aryan luthra",role:"Admin" ,status:"Offline",onlineTime:"5h 42m",lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Online",  onlineTime:"5h 42m", lastSeen:"Now"},
+        {name:"Aryan luthra", role:"Admin" , status:"Offline", onlineTime:"5h 42m", lastSeen:"Now"},
     ]
     const filter = [{title:"All",color:"",data:8},{title:"Online",color:"#22c55e",data:4},{title:"Away",color:"#f59e0b",data:2},{title:"Offline",color:"#d1d5db",data:2}]
     const columns = [{title:"user",space:"20%"},{title:"status",space:"15%"},{title:"online time",space:"20%"},{title:"activity",space:"20%"},{title:"last seen",space:"15%"}]

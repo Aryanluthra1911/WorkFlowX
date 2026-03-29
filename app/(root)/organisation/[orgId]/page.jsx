@@ -2,12 +2,14 @@
 import React, { useEffect, useState, use } from 'react'
 import api from '@/lib/axios';
 import { useParams, useRouter } from 'next/navigation';
+import useUserStore from '@/store/user/useUserstore';
 
 
 const page = () => {
     const router = useRouter()
     const params = useParams();
     const orgId = params.orgId;
+    const user = useUserStore((state)=>state.user);
     const [orgData,setorgData] = useState([])
     const [loading, setLoading] = useState(true);
     const [totalProjects,settotalProjects] = useState([])
@@ -19,13 +21,23 @@ const page = () => {
     const [projects,setprojects] = useState([])
     useEffect(()=>{
         const fetch_data = async()=>{
+            if(!user || !orgId) return;
             try{
-                const res = await api.get(`/organisation/projectsByOrgId?orgId=${orgId}`);
-                console.log(res.data.data.projects)
-                setorgData(res.data.data)
-                setprojects(res.data.data.projects)
-                settotalProjects(res.data.totalProjects)
-                setstatusSummary(res.data.statusSummary)
+                if(user?.role==="Admin"){
+                    const res = await api.get(`/organisation/projectsByOrgId`, {params:{orgId:orgId}});
+                    setorgData(res.data.data)
+                    setprojects(res.data.data.projects)
+                    settotalProjects(res.data.totalProjects)
+                    setstatusSummary(res.data.statusSummary)
+                }
+                else if(user?.role==="Manager"){
+                    const res = await api.get(`/Manager/Organisation/GetProjectByOrgId`, {params:{orgId:orgId,managerId:user?.id}});
+                    setorgData(res.data.data)
+                    setprojects(res.data.data.projects)
+                    settotalProjects(res.data.totalProjects)
+                    setstatusSummary(res.data.statusSummary)
+                }
+                
             } catch (err) {
                 console.error(err);
             
@@ -34,8 +46,7 @@ const page = () => {
             }
         }
         fetch_data()
-        
-    },[params])
+    },[user,orgId])
     const filteredProjects = active ==="All"?projects:projects.filter(project => project.status === active.toUpperCase().replace(" ", "_"))
     if (loading) 
         return <div className='w-full h-[90%] bg-[#e9ecef] flex flex-col justify-between items-center'>

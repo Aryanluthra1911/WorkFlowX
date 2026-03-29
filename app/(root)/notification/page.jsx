@@ -1,5 +1,7 @@
+"use client"
 import Notification_card from '@/components/Notification_card'
-import React from 'react'
+import usePageStore from '@/store/pages/usePageStore';
+import React, { useEffect } from 'react'
 
 const page = () => {
     const notification = [
@@ -40,7 +42,12 @@ const page = () => {
             time: "Yesterday"
         }
     ];
-
+    const setActivePage = usePageStore((state)=>state.setActivePage)
+    const setTitle = usePageStore((state)=>state.setTitle)
+    useEffect(()=>{
+        setActivePage("Notification")
+        setTitle("Notification")
+    },[])
     return (
         <div className='bg-[#e9ecef] w-full h-[90%] flex flex-col gap-5 items-center overflow-y-auto no-scrollbar pt-4'>
             {notification.map((idx,key)=>{

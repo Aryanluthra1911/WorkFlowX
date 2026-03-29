@@ -4,11 +4,16 @@ import { prisma } from "@/lib/prisma";
 export async function GET(req) {
     try {
         const { searchParams } = new URL(req.url);
-        const companyName = searchParams.get('companyName')
+        const managerId = searchParams.get('managerId')
         const organisations = await prisma.organisation.findMany({
-            where:{companyName:companyName}
+            where:{
+                projects: {
+                    some: {
+                        projectManagerId: Number(managerId)
+                    }
+                }
+            }
         })
-        
         return NextResponse.json(organisations);
     } catch (error) {
         console.error("Error fetching organisations:", error);

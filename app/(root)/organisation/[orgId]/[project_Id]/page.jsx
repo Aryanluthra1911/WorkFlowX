@@ -13,11 +13,8 @@ import {
 import {
     SortableContext,
     verticalListSortingStrategy,
-    useSortable,
-    arrayMove
 } from "@dnd-kit/sortable";
 import { useDroppable } from "@dnd-kit/core";
-import { CSS } from "@dnd-kit/utilities";
 import { DragOverlay } from "@dnd-kit/core";
 
 const page = () => {

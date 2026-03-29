@@ -1,0 +1,68 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+
+export async function GET(req) {
+    try {
+        const { searchParams } = new URL(req.url);
+        const orgId = Number(searchParams.get('orgId'));
+        const managerId = Number(searchParams.get('managerId'));
+        const orgData = await prisma.organisation.findUnique({
+            where: { id: orgId },
+            include: {
+                projects: {
+                    where: {
+                        projectManagerId: managerId
+                    },
+                    include:{
+                        task:true
+                    }
+                }
+            }
+        });
+        if (!orgData) {
+            return NextResponse.json({ success: false, message: "Organisation not found" });
+        }
+
+        const totalProjects = await prisma.project.count({
+            where: { 
+                orgId : orgId ,
+                projectManagerId: managerId
+            }
+        });
+
+        const statusCounts = await prisma.project.groupBy({
+            by: ["status"],
+            where: { 
+                orgId : orgId ,
+                projectManagerId: managerId
+            },
+            _count: {
+                status: true
+            }
+        });
+
+        const statuses = {
+            PENDING: 0,
+            ACTIVE: 0,
+            COMPLETED: 0,
+            ON_HOLD: 0,
+            CANCELLED: 0
+        };
+
+        statusCounts.forEach(item => {
+            statuses[item.status] = item._count.status;
+        });
+
+        return NextResponse.json({
+            success: true,
+            data: orgData,
+            totalProjects,
+            statusSummary: statuses
+        });
+    } catch (error) {
+        console.error("Error fetching projects:", error);
+        return NextResponse.json(
+            {success:false, error: "Failed to fetch projects" }
+        );
+    }
+}

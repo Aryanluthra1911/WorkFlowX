@@ -1,9 +1,19 @@
 import React from 'react'
+import AssignTaskBlock from './AssignTaskBlock'
+import ProjectDetailBlock from './ProjectDetailBlock'
+import TaskDetailBlock from './TaskDetailBlock'
 
 const Manger_dashboard = () => {
+    
     return (
-        <div className='w-full h-[90%] bg-[#f9fafb] flex flex-col justify-around items-center'>
-            
+        <div className='w-full h-[90%] bg-[#f9fafb] flex flex-col items-center justify-evenly'>
+            <div className=' h-[49%] w-full flex items-center justify-evenly'>
+                <TaskDetailBlock/>
+                <AssignTaskBlock/>
+            </div>
+            <div className=' h-[49%] w-full flex items-center justify-evenly'>
+                <ProjectDetailBlock/>
+            </div>
         </div>
     )
 }

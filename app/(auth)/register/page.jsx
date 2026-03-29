@@ -3,10 +3,10 @@ import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import axios from "axios"
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
+import api from '@/lib/axios'
 
 
 const page = () =>{
@@ -15,14 +15,14 @@ const page = () =>{
     const [c_name,setc_name]=useState('');
     const [email,setemail]=useState('');
     const [password,setpassword]=useState('');
-    const [role,setrole]=useState('Admin');
+    const role='Admin';
     const [loading,setloading] = useState(false)
 
     const sendData =  async(e)=>{
         e.preventDefault();
         setloading(true)
         try{
-            const res =  await axios.post('/api/registercompany',{
+            const res =  await api.post('/registercompany',{
                 name:name,
                 c_name:c_name,
                 email:email,

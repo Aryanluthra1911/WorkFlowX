@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Project" ALTER COLUMN "status" SET DEFAULT 'ACTIVE';
+
+-- AlterTable
+ALTER TABLE "Task" ALTER COLUMN "status" SET DEFAULT 'ACTIVE';
