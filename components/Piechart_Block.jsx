@@ -1,85 +1,56 @@
-"use client"
-
-import { TrendingUp } from "lucide-react"
-import { Pie, PieChart } from "recharts"
-
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
+"use client";
+import { Pie, PieChart,cell } from "recharts";
 import {
     ChartConfig,
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
 
-export const description = "A donut chart"
-
-const chartData = [
-    { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-    { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-    { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-    { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-    { browser: "other", visitors: 90, fill: "var(--color-other)" },
-]
-
-const chartConfig = {
-    visitors: {
-        label: "Visitors",
-    },
-    chrome: {
-        label: "Chrome",
-        color: "var(--chart-1)",
-    },
-    safari: {
-        label: "Safari",
-        color: "var(--chart-2)",
-    },
-    firefox: {
-        label: "Firefox",
-        color: "var(--chart-3)",
-    },
-    edge: {
-        label: "Edge",
-        color: "var(--chart-4)",
-    },
-    other: {
-        label: "Other",
-        color: "var(--chart-5)",
-    },
-} 
-
-export function Piechart_Block({title,className}) {
+export const description = "A donut chart";
+export function Piechart_Block({
+    title,
+    className,
+    data = [],
+    chartConfig = {},
+    dataKey,
+    nameKey,
+    loading,
+}) {
+    const isEmpty = !data || data.length === 0;
+    const chartData =
+        loading || isEmpty
+            ? [{ name: "Loading", value: 100, fill: "#D1D5DB" }]
+            : data;
+    const isDummy = loading || isEmpty;
     return (
-        <div className={`${className} rounded-2xl bg-white border-2  flex flex-col justify-around items-center shadow-md`}>
-            <div className="w-[90%] h-[15%] text-xl font-semibold flex items-center justify-center">
+        <div
+            className={`${className} rounded-2xl bg-white border-2  flex flex-col justify-evenly items-center shadow-md `}
+        >
+            <div className="w-[90%] h-[15%] text-xl font-bold flex items-center justify-center">
                 {title}
             </div>
             <div className="w-[90%] h-[70%] flex ">
                 <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square max-h-[250px]"
+                    className="mx-auto aspect-square max-h-[250px] transition-transform duration-500 ease-out group-hover:scale-105"
                 >
-                    <PieChart>
+                    <PieChart className={`transition-transform duration-300 ease-out group-hover:scale-105 ${loading ? " animate-pulse [animation-duration:1s]" : ""}`}>
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}
                         />
                         <Pie
                             data={chartData}
-                            dataKey="visitors"
-                            nameKey="browser"
-                            innerRadius={50}
-                            outerRadius={70}
+                            dataKey={isDummy ? "value" : dataKey}
+                            nameKey={isDummy ? "name" : nameKey}
+                            innerRadius={68}
+                            outerRadius={95}
+                            cornerRadius={4}
                         />
                     </PieChart>
                 </ChartContainer>
             </div>
         </div>
-    )
+    );
 }

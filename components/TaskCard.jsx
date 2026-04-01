@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 
-const TaskCard = ({ idx, idx2 }) => {
+const TaskCard = ({ idx, idx2,onClick }) => {
     const [hovered, setHovered] = useState(false);
     const {
         attributes,
@@ -35,6 +35,7 @@ const TaskCard = ({ idx, idx2 }) => {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             className="w-full bg-white rounded-xl border border-gray-200 p-3 shadow-sm cursor-grab"
+            onClick={onClick}
         >
             <div className='font-bold text-sm'>
                 {idx2.title}

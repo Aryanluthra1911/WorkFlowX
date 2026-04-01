@@ -207,7 +207,7 @@ const page = () => {
                         </div>
                     </div>
                     <div className='w-[97%] h-[10%] flex items-center justify-center'>
-                        <button type='submit' className={`text-white w-[50%] h-[90%] bg-[#2563eb] rounded-2xl ${loading ? 'bg-[#526691]':""} border-white border shadow-md font-semibold`}>
+                        <button type='submit' className={`text-white w-[50%] h-[90%] bg-[#2563eb] rounded-2xl ${loading ? 'bg-[#526691]':""} border-white border shadow-md font-semibold hover:scale-105 transform transition-all duration-500`}>
                             {loading  ? 'Adding User...':"Add User"}
                         </button>
                     </div>
@@ -259,13 +259,19 @@ const page = () => {
                     
                 </div>
                 <div className='w-[97%] h-[8%] flex justify-evenly items-center'>
-                    <button className='font-bold w-[30%] h-[80%] border-2 bg-white border-[#2563eb] rounded-2xl text-[#2563eb]  hover:text-white hover:bg-[#2563eb] transform transition-all duration-200'>
-                        Change Role
-                    </button>
-                    <button className='font-bold w-[30%] h-[80%] border-2 bg-white border-red-600 rounded-2xl text-red-600  hover:text-white hover:bg-red-600 transform transition-all duration-200'>
+                    {
+                        user?.role==="Admin"?
+                            <button className='font-bold w-[30%] h-[80%] border-2 bg-white border-[#2563eb] rounded-2xl text-[#2563eb]  hover:text-white hover:bg-[#2563eb] transform transition-all duration-500'>
+                                Change Role
+                            </button>
+                            :
+                            <></>
+                    }
+                    
+                    <button className='font-bold w-[30%] h-[80%] border-2 bg-white border-red-600 rounded-2xl text-red-600  hover:text-white hover:bg-red-600 transform transition-all duration-500'>
                         Block User
                     </button>
-                    <button className='font-bold w-[30%] h-[80%] border-2 bg-white border-red-600 rounded-2xl text-red-600  hover:text-white hover:bg-red-600 transform transition-all duration-200'>
+                    <button className='font-bold w-[30%] h-[80%] border-2 bg-white border-red-600 rounded-2xl text-red-600  hover:text-white hover:bg-red-600 transform transition-all duration-500'>
                         Delete User
                     </button>
                 </div>

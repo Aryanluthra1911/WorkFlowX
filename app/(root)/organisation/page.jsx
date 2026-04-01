@@ -20,11 +20,16 @@ const page = () => {
             try{
                 if(user?.role === "Admin"){
                     const response = await api.get('/organisation/fetchOrganisations',{params:{companyName:user?.c_name}});
-                    await setorganisations(response.data)
+                    setorganisations(response.data.organisations)
                 }
                 else if(user?.role === "Manager"){
-                    const response = await api.get('Manager/Organisation/GetOrganisation',{params:{managerId:user?.id}});
-                    await setorganisations(response.data)
+                    const response = await api.get('/Manager/Organisation/GetOrganisation',{params:{managerId:user?.id}});
+                    setorganisations(response.data.organisations)
+                }
+                else if(user?.role === "Member"){
+                    const response = await api.get('/Member/Organisation/GetOrganisation',{params:{memberId:user?.id}});
+                    console.log(response.data)
+                    setorganisations(response.data.organisations)
                 }
             }catch (err) {
                 console.error(err);

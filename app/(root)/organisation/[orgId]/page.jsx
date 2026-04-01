@@ -3,6 +3,7 @@ import React, { useEffect, useState, use } from 'react'
 import api from '@/lib/axios';
 import { useParams, useRouter } from 'next/navigation';
 import useUserStore from '@/store/user/useUserstore';
+import usePageStore from '@/store/pages/usePageStore';
 
 
 const page = () => {
@@ -10,7 +11,6 @@ const page = () => {
     const params = useParams();
     const orgId = params.orgId;
     const user = useUserStore((state)=>state.user);
-    const [orgData,setorgData] = useState([])
     const [loading, setLoading] = useState(true);
     const [totalProjects,settotalProjects] = useState([])
     const [statusSummary,setstatusSummary] = useState([])
@@ -19,20 +19,31 @@ const page = () => {
     const colordata = [{title:"ACTIVE",textClr:"#000000",bg:"#8ec5ff"},{title:"PENDING",textClr:"#000000",bg:"#fff085"},{title:"COMPLETED",textClr:"#000000",bg:"#7bf1a8"},{title:"ON_HOLD",textClr:"#000000",bg:"#ff6467"}]
     const [active,setactive] = useState("All")
     const [projects,setprojects] = useState([])
+    const setTitle = usePageStore((state) => state.setTitle);
+    const setActivePage = usePageStore((state)=>state.setActivePage)
+    useEffect(() => {
+        setTitle("Projects")
+        setActivePage("Organisation")
+    }, [])
     useEffect(()=>{
         const fetch_data = async()=>{
             if(!user || !orgId) return;
             try{
                 if(user?.role==="Admin"){
                     const res = await api.get(`/organisation/projectsByOrgId`, {params:{orgId:orgId}});
-                    setorgData(res.data.data)
                     setprojects(res.data.data.projects)
                     settotalProjects(res.data.totalProjects)
                     setstatusSummary(res.data.statusSummary)
                 }
                 else if(user?.role==="Manager"){
                     const res = await api.get(`/Manager/Organisation/GetProjectByOrgId`, {params:{orgId:orgId,managerId:user?.id}});
-                    setorgData(res.data.data)
+                    setprojects(res.data.data.projects)
+                    settotalProjects(res.data.totalProjects)
+                    setstatusSummary(res.data.statusSummary)
+                }
+                else if(user?.role==="Member"){
+                    const res = await api.get(`/Member/Organisation/GetProjects`, {params:{orgId:orgId,memberId:user?.id}});
+                    console.log(res.data)
                     setprojects(res.data.data.projects)
                     settotalProjects(res.data.totalProjects)
                     setstatusSummary(res.data.statusSummary)

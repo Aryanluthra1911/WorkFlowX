@@ -37,7 +37,7 @@ const page = () => {
                 return;
             }
             setchats(res.data.data.messages || [])
-        } catch (error) {
+        }catch (error) {
             console.error("Failed to fetch chats", error);
         }finally{
             setloading(false)
@@ -117,7 +117,7 @@ const page = () => {
 
     return (
         <div className='w-full h-[90%] bg-[#f9fafb] flex justify-evenly items-center'>
-            <div className='w-[98%] h-[97%] rounded-2xl bg-white shadow-md border-2  flex flex-col items-center justify-between'>
+            <div className='w-[98%] h-[97%] rounded-2xl bg-white shadow-md  flex flex-col items-center justify-between'>
                 <div className='w-full h-[12%] bg-[#2563eb] rounded-t-xl flex items-center justify-start gap-2 border-2 border-[#2563eb]'>
                     <div className='w-[10%] h-[70%] flex items-center justify-center '>
                         <div className='w-12 h-12 bg-[#5081ee] flex justify-center items-center rounded-full'>
@@ -153,7 +153,7 @@ const page = () => {
                                 </div>
                             </div>
                         )):
-                        chats?
+                        chats.length>0?
                             chats.map((idx,key)=>(
                                 <AiMessageCard idx={idx} key={key}/>
                             )) : 

@@ -5,12 +5,17 @@ import useUserStore from '@/store/user/useUserstore'
 import api from '@/lib/axios'
 
 const UserProvider = ({ children }) => {
-    const { data: session } = useSession()
+    const { data: session, status } = useSession()
     const user = useUserStore((state) => state.user)
     const setUser = useUserStore((state) => state.setUser)
 
     useEffect(() => {
-        if (!session?.user?.email || user) return // 🔥 already hai to skip
+        const isLoggingOut = sessionStorage.getItem("isLoggingOut");
+
+        if (isLoggingOut === "true") return;   // 💀 BLOCK
+
+        if (status !== "authenticated") return;
+        if (!session?.user?.email || user) return;
 
         const fetchUser = async () => {
             try {
@@ -24,7 +29,7 @@ const UserProvider = ({ children }) => {
         }
 
         fetchUser()
-    }, [session, user])
+    }, [session, user, status])
 
     return children
 }

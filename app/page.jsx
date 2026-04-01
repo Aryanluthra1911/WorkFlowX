@@ -1,17 +1,23 @@
 'use client'
+import useUserStore from '@/store/user/useUserstore'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
 
 const page = () => {
   const router = useRouter()
-  const {data:session,status} = useSession();
-
+  const {status} = useSession();
+  const clearUser = useUserStore((state) => state.clearUserStore);
   useEffect(() => {
     if (status === "authenticated") {
       router.push("/dashboard");
     }
   }, [status, router]);
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      clearUser();
+    }
+  }, [status]);
   if (status === "loading"){
     return <div className='h-screen w-screen text-2xl flex justify-center items-center'>
       loading...

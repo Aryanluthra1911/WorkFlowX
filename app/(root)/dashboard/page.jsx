@@ -2,15 +2,11 @@
 import Admin_dashboard from '@/components/Admin_dashboard'
 import Manger_dashboard from '@/components/Manger_dashboard'
 import Member_dashboard from '@/components/Member_dashboard'
-import api from '@/lib/axios'
 import usePageStore from '@/store/pages/usePageStore'
 import useUserStore from '@/store/user/useUserstore'
-
-
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 const page = () => {
-
     const user = useUserStore((state)=>state.user);
     const setActivePage = usePageStore((state)=>state.setActivePage)
     useEffect(()=>{

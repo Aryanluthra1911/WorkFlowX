@@ -6,7 +6,10 @@ const useUserStore = create(
         (set) => ({
             user: null,
             setUser: (data) => set({ user: data }),
-            clearUserStore: () => set({ user: null }),
+            clearUserStore: () => {
+                useUserStore.persist.clearStorage();
+                useUserStore.setState({ user: null });
+            }
         }),
         {
             name: "user-storage",

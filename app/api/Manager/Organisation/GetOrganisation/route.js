@@ -14,7 +14,7 @@ export async function GET(req) {
                 }
             }
         })
-        return NextResponse.json(organisations);
+        return NextResponse.json({success:true,message:"data fetched",organisations});
     } catch (error) {
         console.error("Error fetching organisations:", error);
         return NextResponse.json(
