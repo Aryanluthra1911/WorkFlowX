@@ -15,7 +15,8 @@ export async function GET(req) {
                 title: true,
                 assignedTo: true,
                 dueDate: true,
-                status: true
+                status: true,
+                description:true
             }
         })
         return NextResponse.json({sucess:true,message:"data fetched",tasks})

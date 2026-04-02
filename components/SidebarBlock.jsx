@@ -50,13 +50,6 @@ export function SidebarBlock() {
             ),
         },
         {
-            label: "Profile",
-            href: "/profile",
-            icon: (
-                <LuUser className="h-5 w-5 shrink-0 text-white dark:text-neutral-200" />
-            ),
-        },
-        {
             label: "User Activity",
             href: "/user_activity",
             icon: (
@@ -114,13 +107,6 @@ export function SidebarBlock() {
             href: "/notification",
             icon: (
                 <MdOutlineNotificationsActive className="h-5 w-5 shrink-0 text-white dark:text-neutral-200" />
-            ),
-        },
-        {
-            label: "Profile",
-            href: "/profile",
-            icon: (
-                <LuUser className="h-5 w-5 shrink-0 text-white dark:text-neutral-200" />
             ),
         },
         {
