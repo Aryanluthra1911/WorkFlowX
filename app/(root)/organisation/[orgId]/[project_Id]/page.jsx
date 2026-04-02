@@ -140,6 +140,7 @@ const page = () => {
                     const res = await api.get(
                         `/organisation/fetchProjectData?projectId=${project_Id}`,
                     );
+                    setproject(res.data.data);
                     settasks(res.data.data.task);
                 }
             } catch (error) {
