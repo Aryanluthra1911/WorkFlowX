@@ -5,33 +5,61 @@ import "react-toastify/dist/ReactToastify.css";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 export default function ProtectedShell({ children }) {
     const title = usePageStore((state) => state.title);
     const router = useRouter();
     const pathname = usePathname();
     console.log(pathname);
-    const [history, setHistory] = useState([]);
-    const [index, setIndex] = useState(-1);
+    const [nav, setNav] = useState({
+        history: [pathname],
+        index: 0,
+    });
+    const [isMounted, setIsMounted] = useState(false);
     useEffect(() => {
-        setHistory((prev) => {
-            const currentIndex = index;
-            if (prev[currentIndex] === pathname) return prev;
-            const newHistory = prev.slice(0, currentIndex + 1);
+        setIsMounted(true);
+    }, []);
+    const isNavigating = useRef(false);
+    useEffect(() => {
+        if (isNavigating.current) {
+            isNavigating.current = false;
+            return;
+        }
+        setNav((prev) => {
+            const { history, index } = prev;
+            if (history[history.length - 1] === pathname) return prev;
+            const newHistory = history.slice(0, index + 1);
             newHistory.push(pathname);
-            setIndex(newHistory.length - 1);
-            return newHistory;
+            return {
+                history: newHistory,
+                index: newHistory.length - 1,
+            };
         });
-
-        setIndex((prev) => prev + 1);
     }, [pathname]);
     const goBackward = () => {
-        if (index < 0) return;
-        const newIndex = index - 1;
-        setIndex(newIndex);
-        router.replace(history[newIndex]);
-        console.log( index);
+        if (nav.index <= 0) return;
+        const newIndex = nav.index - 1;
+        const target = nav.history[newIndex];
+        setNav((prev) => ({
+            ...prev,
+            index: newIndex,
+        }));
+        isNavigating.current = true;
+        router.replace(target);
     };
+    const goForward = () => {
+        if (nav.index >= nav.history.length - 1) return;
+        const newIndex = nav.index + 1;
+        const target = nav.history[newIndex];
+        setNav((prev) => ({
+            ...prev,
+            index: newIndex,
+        }));
+        isNavigating.current = true;
+        router.replace(target);
+    };
+    const canGoBack = nav.index > 0;
+    const canGoForward = nav.index < nav.history.length - 1;
     return (
         <div className="h-screen w-screen flex">
             <div className="w-auto h-full shadow-md">
@@ -44,16 +72,18 @@ export default function ProtectedShell({ children }) {
                     </div>
                     <div className="w-[12%] h-full flex items-center justify-evenly">
                         <button
-                            onClick={() => goBackward()}
+                            onClick={goBackward}
+                            disabled={!isMounted || !canGoBack}
                             className={`w-10 h-10 border rounded-full flex items-center justify-center
-                            `}
+                            ${canGoBack ? "hover:scale-105 cursor-pointer" : "opacity-40"}`}
                         >
                             <FaArrowLeft size={20} />
                         </button>
                         <button
-                            onClick={() => router.forward()}
-                            className={`w-10 h-10 border rounded-full flex items-center justify-center 
-                            `}
+                            onClick={goForward}
+                            disabled={!isMounted || !canGoForward}
+                            className={`w-10 h-10 border rounded-full flex items-center justify-center
+                            ${canGoForward ? "hover:scale-105 cursor-pointer" : "opacity-40"}`}
                         >
                             <FaArrowRight size={20} />
                         </button>
