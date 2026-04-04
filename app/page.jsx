@@ -260,23 +260,30 @@ const page = () => {
     ];
     const HowItWorks = [
         {
-            idx:"01",
-            title:"Create Project",
-            description:"Admin creates a project by adding details like title, description, due date, documents, and organization.",
-        },{
-            idx:"02",
-            title:"Setup Organization",
-            description:"If the organization exists, the project is added to it; otherwise, a new one is created.",
-        },{
-            idx:"03",
-            title:"Assign Tasks",
-            description:"Admins and managers divide the project into tasks and assign them to team members.",
-        },{
-            idx:"04",
-            title:"Collaborate & Complete",
-            description:"Members work on tasks, collaborate, and track progress until completion.",
-        }
-    ]
+            idx: "01",
+            title: "Create Project",
+            description:
+                "Admin creates a project by adding details like title, description, due date, documents, and organization.",
+        },
+        {
+            idx: "02",
+            title: "Setup Organization",
+            description:
+                "If the organization exists, the project is added to it; otherwise, a new one is created.",
+        },
+        {
+            idx: "03",
+            title: "Assign Tasks",
+            description:
+                "Admins and managers divide the project into tasks and assign them to team members.",
+        },
+        {
+            idx: "04",
+            title: "Collaborate & Complete",
+            description:
+                "Members work on tasks, collaborate, and track progress until completion.",
+        },
+    ];
     useEffect(() => {
         if (status === "authenticated") {
             router.push("/dashboard");
@@ -558,7 +565,10 @@ const page = () => {
                     </div>
                 </div>
             </div>
-            <div className="w-full flex justify-center items-center scroll-mt-24">
+            <div
+                id="aiAssistant"
+                className="w-full flex justify-center items-center scroll-mt-24"
+            >
                 <div className="w-[90%] flex flex-col gap-6">
                     <div className="w-40 py-1 border-2 border-[#a7f3d0] flex items-center justify-center text-sm font-semibold rounded-2xl px-4 text-[#059869] adow-md bg-[#ecfdf5]">
                         AI-POWERED
@@ -655,7 +665,10 @@ const page = () => {
                     </div>
                 </div>
             </div>
-            <div className="w-full flex justify-center items-center scroll-mt-24">
+            <div
+                id="howItWorks"
+                className="w-full flex justify-center items-center scroll-mt-24"
+            >
                 <div className="w-[90%] flex flex-col gap-6">
                     <div className="w-40 py-1 border-2 border-[#ddd6fe] flex items-center justify-center text-sm font-semibold rounded-2xl px-4 text-[#7c3aed] adow-md bg-[#f5f3ff]">
                         HOW IT WORK
@@ -668,11 +681,15 @@ const page = () => {
                         direction="top"
                     />
                     <div className="w-[35%] text-[#6b728f] font-light">
-                        Four simple steps to get your whole team aligned and productive from day one.
+                        Four simple steps to get your whole team aligned and
+                        productive from day one.
                     </div>
                     <div className="w-full flex flex-2 flex-wrap items-center justify-around space-y-4">
-                        {HowItWorks.map((idx,key)=>(
-                            <div key={key} className="w-[48%] h-45 flex flex-col items-center justify-around">
+                        {HowItWorks.map((idx, key) => (
+                            <div
+                                key={key}
+                                className="w-[48%] h-45 flex flex-col items-center justify-around"
+                            >
                                 <div className="w-15 h-15 rounded-full border-2 text-[#2563eb] shadow:lg hover:border-[#2563eb] hover:bg-[#eff6ff] transform transition-all duration-200 bg-white text-xl font-bold flex items-center justify-center">
                                     {idx.idx}
                                 </div>
@@ -682,10 +699,8 @@ const page = () => {
                                 <div className=" w-[50%] text-sm text-gray-500 text-center">
                                     {idx.description}
                                 </div>
-
                             </div>
                         ))}
-
                     </div>
                 </div>
             </div>

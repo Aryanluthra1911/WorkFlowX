@@ -10,7 +10,8 @@ const Navbar = ({ className }) => {
         { title: "Home", link: "#home", id: 1 },
         { title: "Features", link: "#features", id: 2 },
         { title: "Roles", link: "#roles", id: 3 },
-        { title: "About Us", link: "", id: 4 },
+        { title: "Ai Assistant", link: "#aiAssistant", id: 4 },
+        { title: "How It Works", link: "#howItWorks", id: 5 },
     ];
     const router = useRouter();
     const [active, setActive] = useState(1);
