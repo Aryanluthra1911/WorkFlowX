@@ -130,3 +130,11 @@
   scrollbar-width: none; /* Firefox */
 }
 
+body::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

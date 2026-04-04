@@ -158,7 +158,7 @@ function ProjectModel({onClose}){
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-            <div className="relative z-10 w-[50%] h-[65%]  mx-4 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 transform transition-all duration-200 flex flex-col items-center justify-around">
+            <div className="relative z-10 w-[50%] h-[65%]  mx-4 bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 transform transition-all duration-500 flex flex-col items-center justify-around">
                 <div className='w-[95%] h-[10%] flex items-center justify-between'>
                     <div className='text-2xl font-bold h-full w-70 flex items-center '>Create New Project</div>
                     <div onClick={onClose} className='h-[90%] w-10 flex justify-center items-center rounded-xl'>
@@ -240,7 +240,7 @@ function ProjectModel({onClose}){
                         </div>
                     </div>
                     <div className='w-full h-[12%] flex justify-around items-center'>
-                        <button onClick={onClose} className='w-[40%] h-full rounded-2xl text-xl font-semibold border-black border hover:border-white hover:bg-red-600 hover:text-[#ffffff] transform transition-all duration-200'>
+                        <button onClick={onClose} className='w-[40%] h-full rounded-2xl text-xl font-semibold border-black border hover:border-white hover:bg-red-600 hover:text-[#ffffff] transform transition-all duration-500'>
                             Cancel
                         </button>
                         <button type='submit' className={`${loading? "bg-[#268a4a]":""}transform transition-all duration-200 hover:border-black w-[40%] h-full bg-[#16a34a] text-white rounded-2xl text-xl font-semibold border `}>
