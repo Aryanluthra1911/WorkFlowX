@@ -6,6 +6,9 @@ import useUserStore from "@/store/user/useUserstore";
 import api from "@/lib/axios";
 import { ChartBarMultiple } from "./ChartBarMultiple";
 import usePageStore from "@/store/pages/usePageStore";
+import { LuClipboardList } from "react-icons/lu";
+
+
 const Member_dashboard = () => {
     const user = useUserStore((state) => state.user);
     const setTitle = usePageStore((state) => state.setTitle);
@@ -13,14 +16,14 @@ const Member_dashboard = () => {
     const [tasks, setTasks] = useState([]);
     const [projects, setProjects] = useState([]);
     const [statusData, setStatusData] = useState([]);
-    
+
     const OngoingTaskAndProjects = [
         {
-            title: "Ongoing Tasks",
+            title: "Task",
             content: tasks,
         },
         {
-            title: "Ongoing Projects",
+            title: "Project",
             content: projects,
         },
     ];
@@ -113,6 +116,7 @@ const Member_dashboard = () => {
                     loading={loading}
                 />
                 {OngoingTaskAndProjects.map((idx, key) => {
+                    const content = idx.content;
                     return (
                         <div
                             idx={idx}
@@ -120,15 +124,25 @@ const Member_dashboard = () => {
                             className="w-[35.5%] h-[90%] border-2 rounded-2xl bg-white flex flex-col items-center justify-around shadow-md"
                         >
                             <div className="w-[90%] h-[15%] text-xl font-bold flex items-center justify-center">
-                                {idx.title}
+                                Ongoing {idx.title}s
                             </div>
                             <div className="w-[90%] h-[70%]  overflow-y-auto no-scrollbar space-y-2">
                                 {loading ? (
-                                    Array.from({ length: 4}).map((_, index) => (
-                                        <div key={index} className="w-full h-20 bg-gray-300 animate-pulse [animation-duration:1s] rounded-lg p-4 shadow-sm hover:scale-97 hover:shadow-md transition-all duration-500"/>
-                                    ))
-
-                                    
+                                    Array.from({ length: 4 }).map(
+                                        (_, index) => (
+                                            <div
+                                                key={index}
+                                                className="w-full h-20 bg-gray-300 animate-pulse [animation-duration:1s] rounded-lg p-4 shadow-sm hover:scale-97 hover:shadow-md transition-all duration-500"
+                                            />
+                                        ),
+                                    )
+                                ) : content.length === 0 ? (
+                                    <div className="w-full h-full flex flex-col items-center justify-center text-md font-semibold text-gray-500 gap-3">
+                                        <div className=" p-4 bg-gray-200 rounded-xl shadow-lg">
+                                            <LuClipboardList size={20} />
+                                        </div>
+                                        No {idx.title} Data
+                                    </div>
                                 ) : (
                                     (idx.content || []).map((idx2, key) => (
                                         <SmallProjectCard

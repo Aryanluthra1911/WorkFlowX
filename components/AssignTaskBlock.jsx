@@ -73,7 +73,7 @@ const AssignTaskBlock = () => {
                 ))
                 :
                 latestTasks?.length===0 ?(
-                    <div className='text-md text-gray-400 h-full w-full flex justify-center items-center'>
+                    <div className='font-semibold text-md text-gray-400 h-full w-full flex justify-center items-center'>
                         No Tasks Data
                     </div>
                 ):(

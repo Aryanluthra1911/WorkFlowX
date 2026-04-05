@@ -240,7 +240,7 @@ const page = () => {
                     ))
                     :
                     users?.length===0 && showNoData?
-                        <div className='w-full h-full flex justify-center items-center text-xl text-gray-400'>
+                        <div className=' font-semibold w-full h-full flex justify-center items-center text-xl text-gray-400'>
                             No User Data
                         </div>
                         

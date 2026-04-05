@@ -57,8 +57,8 @@ const ProjectDetailBlock = () => {
                 <div className='w-full min-h-10 bg-gray-200 rounded-2xl animate-pulse [animation-duration:1s]' key={index} />
               ))
               :
-              projects?.length===0 ? <div className='text-md text-gray-400 w-full h-full flex items-center justify-center'>
-                No Project Data Found
+              projects?.length===0 ? <div className='font-semibold text-md text-gray-400 w-full h-full flex items-center justify-center'>
+                No Project details
               </div>:(
                 projects.map((idx,key)=>{
                   return<ProjectDetailCard idx={idx} key={idx.id} sno={key+1} />

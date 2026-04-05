@@ -68,7 +68,7 @@ const AddNewProjectBlock = () => {
                 ))
                 :
                     latestProjects.length===0 ?(
-                        <div className='text-md h-full w-full text-gray-400 flex justify-center items-center'>
+                        <div className='font-semibold text-md h-full w-full text-gray-400 flex justify-center items-center'>
                             No Project Data
                         </div>
                     ):(
