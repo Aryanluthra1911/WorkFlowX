@@ -140,7 +140,7 @@ const page = () => {
                                         </Label>
                                         <a
                                             href="#"
-                                            className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                                            className="ml-auto inline-block text-xs underline-offset-4 hover:underline transform transition-all duration-500 text-gray-500 hover:text-black font-semibold"
                                         >
                                             Forgot your password?
                                         </a>
@@ -156,9 +156,16 @@ const page = () => {
                                     />
                                 </div>
                             </div>
+                            <div
+                                onClick={() => router.push("/signin")}
+                                className="w-full flex items-center justify-end text-xs font-semibold pt-4 on hover:underline transform transition-all duration-500 text-gray-500 hover:text-black"
+                            >
+                                Already have an Account?
+                            </div>
                             <Button type="submit" className="w-full mt-6">
                                 {loading ? "Creating..." : "Create Account"}
                             </Button>
+                            
                         </form>
                     </div>
                 </div>
