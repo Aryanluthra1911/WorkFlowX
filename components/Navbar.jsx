@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { act, useState } from "react";
 import { useRef, useEffect } from "react";
@@ -6,6 +7,7 @@ const Navbar = ({ className }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const refs = useRef([]);
     const [style, setStyle] = useState({});
+    const { status } = useSession()
     const navItems = [
         { title: "Home", link: "#home", id: 1 },
         { title: "Features", link: "#features", id: 2 },
@@ -26,6 +28,14 @@ const Navbar = ({ className }) => {
             });
         }
     }, [active]);
+    const GetStarted = ()=>{
+        if(status === "authenticated"){
+            router.push("/dashboard")
+        }
+        else{
+            router.push("/register")
+        }
+    }
     return (
         <div className={className}>
             <style>
@@ -63,7 +73,7 @@ const Navbar = ({ className }) => {
                         </div>
                     ))}
                 </div>
-                <button className="hidden md:flex items-center gap-2.5 bg-linear-to-r from-zinc-950 to-zinc-500 text-zinc-50 hover:text-zinc-200 text-sm pl-5 pr-2 py-2 rounded-full cursor-pointer border-0 font-semibold ">
+                <button onClick={()=>GetStarted()} className="hidden md:flex items-center gap-2.5 bg-linear-to-r from-zinc-950 to-zinc-500 text-zinc-50 hover:text-zinc-200 text-sm pl-5 pr-2 py-2 rounded-full cursor-pointer border-0 font-semibold hover:-translate-y-1 transform transition-all duration-500">
                     Get started
                     <span className="size-7 rounded-full bg-white flex items-center justify-center">
                         <FaArrowRight size={15} className="text-black"/>

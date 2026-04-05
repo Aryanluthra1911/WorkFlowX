@@ -16,6 +16,10 @@ import FeatureCard from "@/components/FeatureCard";
 import BlurText from "@/components/BlurText";
 import { AiFillStar } from "react-icons/ai";
 import { ThreeDot } from "react-loading-indicators";
+import { MdOutlineAnalytics } from "react-icons/md";
+import { RiRobot2Fill } from "react-icons/ri";
+import { BsChatLeftTextFill } from "react-icons/bs";
+import { TbLayoutKanban } from "react-icons/tb";
 const page = () => {
     const router = useRouter();
     const { status } = useSession();
@@ -171,47 +175,47 @@ const page = () => {
             svg: MdAdminPanelSettings,
             border: "#2563eb",
             description:
-                "Three distinct roles — Admin, Manager, Member — each with precisely scoped permissions for secure, structured team management.",
+                "Admin, Manager, and Member roles with clearly defined permissions ensure secure access, structured workflow, and better accountability across the organization.",
         },
         {
             title: "Smart Task Assignment",
             bg: "#ecfdf5",
-            svg: MdAdminPanelSettings,
+            svg: FiCheckSquare,
             border: "#059669",
             description:
-                "Managers create and assign tasks to members with deadlines, priorities, and real-time status tracking built in from day one.",
+                "Admins and Managers can assign tasks with deadlines, priorities, and status updates, ensuring clarity, accountability, and smooth project execution.",
         },
         {
-            title: "Progress Tracking",
+            title: "Progress & Activity Tracking",
             bg: "#f5f3ff",
-            svg: MdAdminPanelSettings,
+            svg: MdOutlineAnalytics,
             border: "#7c3aed",
             description:
-                "Visual progress bars, status indicators, donut charts, and monthly activity graphs give a clear view of project health.",
+                "Tracks user activity and project progress with insights like monthly performance and task completion, helping teams monitor efficiency and improve productivity.",
         },
         {
-            title: "Gemini AI Chatbot",
-            bg: "#fffbeb",
-            svg: MdAdminPanelSettings,
+            title: "AI Assistant (Gemini Powered)",
+            bg: "#eff6ff",
+            svg: RiRobot2Fill,
             border: "#2563eb",
             description:
-                "An embedded AI assistant powered by Google Gemini resolves doubts instantly and keeps collaboration flowing around the clock.",
+                "An integrated AI assistant helps resolve work-related queries, guide users, and improve productivity by providing instant, intelligent support within the platform.",
         },
         {
-            title: "Real-Time Chat",
-            bg: "#eff6ff",
-            svg: MdAdminPanelSettings,
+            title: "Real-Time Team Chat",
+            bg: "#ecfdf5",
+            svg: BsChatLeftTextFill,
             border: "#059669",
             description:
-                "Integrated messaging lets teammates discuss tasks in context — no need to switch to external tools mid-workflow.",
+                "Built-in real-time chat enables seamless communication between team members, reducing dependency on external tools and keeping discussions contextually linked.",
         },
         {
-            title: "Organisation Management",
-            bg: "#ecfdf5",
-            svg: MdAdminPanelSettings,
+            title: "Kanban Task Management",
+            bg: "#f5f3ff",
+            svg: TbLayoutKanban,
             border: "#7c3aed",
             description:
-                "Admins manage the full org — onboarding members, creating teams, and overseeing every project from a single dashboard.",
+                "Tasks are organized in a visual Kanban board with multiple statuses, helping teams track progress, identify bottlenecks, and manage workflow efficiently.",
         },
     ];
     const AiFeatures = [
@@ -285,22 +289,17 @@ const page = () => {
         },
     ];
     useEffect(() => {
-        if (status === "authenticated") {
-            router.push("/dashboard");
-        }
-    }, [status, router]);
-    useEffect(() => {
         if (status === "unauthenticated") {
             clearUser();
         }
     }, [status]);
-    // if (status === "loading") {
-    //     return (
-    //         <div className="h-screen w-screen text-2xl flex justify-center items-center">
-    //             loading...
-    //         </div>
-    //     );
-    // }
+    const GetStarted = () => {
+        if (status === "authenticated") {
+            router.push("/dashboard");
+        } else {
+            router.push("/register");
+        }
+    };
 
     return (
         <div className="w-full h-screen bg-gradient-to-br from-blue-50 to-white overflow-y-auto no-scrollbar flex flex-col gap-25">
@@ -310,7 +309,7 @@ const page = () => {
                 className=" w-full flex flex-col items-center pt-24 gap-15"
             >
                 <div className=" py-1 border-2 border-[#bfdbfe] flex items-center justify-center text-sm font-semibold rounded-2xl px-4 text-[#2563eb] gap-3 shadow-md bg-[#eff6ff]">
-                    <div className="w-2 h-2 rounded-full bg-[#2563eb] animate-pulse [animation-duration:1.5s]" />
+                    <div className="w-2 h-2 rounded-full bg-[#2563eb] animate-pulse [animation-duration:1.2s]" />
                     Powered by Gemini AI · Real-time Collaboration
                 </div>
                 <div className="font-extrabold font-sans text-7xl w-[80%] flex flex-col items-center justify-center">
@@ -323,17 +322,21 @@ const page = () => {
                 </div>
 
                 <div className="w-[50%] h-auto text-md text-ceneter justify-center text-center font-semibold text-[#6b7280]">
-                    WorkXflow is an intelligent workflow platform that
-                    streamlines team collaboration with smart task distribution,
-                    real-time progress visibility, seamless communication, and
-                    AI-driven assistance — enabling teams to move faster, stay
-                    aligned, and deliver better results
+                    WorkXflow is an intelligent workflow platform that enables structured team collaboration through role-based access, Kanban task management, real-time communication, and AI-powered assistance, helping teams stay aligned, track progress efficiently, and deliver faster with clarity.
                 </div>
                 <div className=" flex gap-5">
-                    <button className="hidden md:flex items-center gap-2.5 bg-linear-to-r from-zinc-950 to-zinc-500 text-zinc-50 hover:text-zinc-200 text-md px-5  py-2 rounded-full cursor-pointer border-0 font-semibold shadow-md">
+                    <button
+                        onClick={() => {
+                            router.push("/signin");
+                        }}
+                        className="md:flex items-center gap-2.5 bg-linear-to-r from-zinc-950 to-zinc-500 text-zinc-50 hover:text-zinc-200 text-md px-5 hover:-translate-y-2 py-2 rounded-full border-0 font-semibold shadow-md  transform transition-all duration-500  hover:shadow-xl"
+                    >
                         Login
                     </button>
-                    <button className="hidden md:flex items-center gap-2.5 bg-linear-to-r from-zinc-950 to-zinc-500 text-zinc-50 hover:text-zinc-200 text-md pl-5 pr-2 py-2 rounded-full cursor-pointer border-0 font-semibold shadow-md">
+                    <button
+                        onClick={() => GetStarted()}
+                        className=" md:flex items-center gap-2.5 bg-linear-to-r from-zinc-950 to-zinc-500 text-zinc-50 hover:text-zinc-200 text-md pl-5 pr-2 py-2 rounded-full border-0 font-semibold shadow-md hover:-translate-y-2 transform transition-all duration-500"
+                    >
                         Get started
                         <span className="size-9 rounded-full bg-white flex items-center justify-center">
                             <FaArrowRight size={15} className="text-black" />
@@ -438,7 +441,7 @@ const page = () => {
                                 return (
                                     <div
                                         key={key}
-                                        className="w-full flex items-center justify-between rounded-xl border bg-white py-2 px-4"
+                                        className="w-full flex items-center justify-between rounded-xl border bg-white py-2 px-4 shadow-lg"
                                     >
                                         <div className="font-semibold text-sm">
                                             {idx.title}
