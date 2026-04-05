@@ -74,7 +74,7 @@ const AssignTaskBlock = () => {
                 :
                 latestTasks?.length===0 ?(
                     <div className='font-semibold text-md text-gray-400 h-full w-full flex justify-center items-center'>
-                        No Tasks Data
+                        No Tasks Found
                     </div>
                 ):(
                     latestTasks.map((idx,key)=>(
